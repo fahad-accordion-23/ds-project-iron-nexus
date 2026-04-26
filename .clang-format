@@ -1,0 +1,17 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+# Formatting rules requested by the user:
+# 1. Next line braces (Allman style)
+BreakBeforeBraces: Allman
+
+# 2. Train* style pointers (Pointer alignment to the left)
+PointerAlignment: Left
+
+# Other helpful adjustments for standard C++ conventions
+IndentWidth: 4
+ColumnLimit: 100
+AllowShortFunctionsOnASingleLine: false
+NamespaceIndentation: All
+...
