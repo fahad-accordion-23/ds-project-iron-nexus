@@ -2,6 +2,7 @@
 #include "Services/NetworkService.hpp"
 #include "Services/SchedulingService.hpp"
 #include "Services/TrainService.hpp"
+#include "Services/LoggerService.hpp"
 #include "UI/TerminalUI.hpp"
 
 int main()
@@ -11,9 +12,10 @@ int main()
     CoachService coachService(&trainService);
     NetworkService networkService;
     SchedulingService schedulingService;
+    LoggerService loggerService;
 
     // Initialize and Start UI
-    TerminalUI ui(&trainService, &coachService, &networkService, &schedulingService);
+    TerminalUI ui(&trainService, &coachService, &networkService, &schedulingService, &loggerService);
     ui.start();
 
     return 0;

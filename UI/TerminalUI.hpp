@@ -5,6 +5,7 @@
 #include "../Services/CoachService.hpp"
 #include "../Services/NetworkService.hpp"
 #include "../Services/SchedulingService.hpp"
+#include "../Services/LoggerService.hpp"
 
 /**
  * @brief Menu-driven Terminal User Interface for The Iron Nexus.
@@ -16,6 +17,7 @@ private:
     CoachService* coachService;
     NetworkService* networkService;
     SchedulingService* schedulingService;
+    LoggerService* loggerService;
 
     bool running;
 
@@ -33,7 +35,7 @@ private:
     int getChoice();
 
 public:
-    TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss);
+    TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss, LoggerService* ls);
     ~TerminalUI();
 
     /**

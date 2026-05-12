@@ -1,8 +1,14 @@
 #include "../TerminalUI.hpp"
 #include <iostream>
 
-TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss)
-    : trainService(ts), coachService(cs), networkService(ns), schedulingService(ss), running(false)
+TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss,
+                       LoggerService* ls)
+    : trainService(ts),
+      coachService(cs),
+      networkService(ns),
+      schedulingService(ss),
+      loggerService(ls),
+      running(false)
 {
 }
 
@@ -36,15 +42,32 @@ void TerminalUI::showMainMenu()
     int choice = getChoice();
     switch (choice)
     {
-    case 1: handleTrainMenu(); break;
-    case 2: handleCoachMenu(); break;
-    case 3: handleNetworkMenu(); break;
-    case 4: handleSeatingMenu(); break;
-    case 5: handleSchedulingMenu(); break;
-    case 6: handleLogsMenu(); break;
-    case 7: handlePersistenceMenu(); break;
-    case 0: running = false; break;
-    default: std::cout << "Invalid choice!\n";
+        case 1:
+            handleTrainMenu();
+            break;
+        case 2:
+            handleCoachMenu();
+            break;
+        case 3:
+            handleNetworkMenu();
+            break;
+        case 4:
+            handleSeatingMenu();
+            break;
+        case 5:
+            handleSchedulingMenu();
+            break;
+        case 6:
+            handleLogsMenu();
+            break;
+        case 7:
+            handlePersistenceMenu();
+            break;
+        case 0:
+            running = false;
+            break;
+        default:
+            std::cout << "Invalid choice!\n";
     }
 }
 
@@ -60,11 +83,77 @@ int TerminalUI::getChoice()
     return choice;
 }
 
-// Module Menu Skeletons
 void TerminalUI::handleTrainMenu()
 {
-    std::cout << "\n--- Train Registry ---\n";
-    std::cout << "1. Register Train\n2. Remove Train\n3. List Fleet\n0. Back\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- [Module 1] Train Registry ---\n";
+        std::cout << "1. Register New Train\n";
+        std::cout << "2. Decommission (Remove) Train\n";
+        std::cout << "3. Find Train by ID\n";
+        std::cout << "4. List All Trains (Fleet Patrol)\n";
+        std::cout << "5. Emergency Stop Command\n";
+        std::cout << "0. Back to Main Menu\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                std::string name;
+                std::cout << "Enter Train Name: ";
+                std::cin.ignore();
+                std::getline(std::cin, name);
+                trainService->registerTrain(name);
+                loggerService->logAction("TRAIN_REGISTER", "Name: " + name);
+                break;
+            }
+            case 2:
+            {
+                int id;
+                std::cout << "Enter Train ID to remove: ";
+                std::cin >> id;
+                trainService->removeTrain(id);
+                loggerService->logAction("TRAIN_REMOVE", "ID: " + std::to_string(id));
+                break;
+            }
+            case 3:
+            {
+                int id;
+                std::cout << "Enter Train ID to find: ";
+                std::cin >> id;
+                Train* t = trainService->findTrain(id);
+                if (t)
+                {
+                    std::cout << "[Found] " << t->getName() << " (ID: " << t->getId() << ")\n";
+                }
+                else
+                {
+                    std::cout << "Train not found.\n";
+                }
+                break;
+            }
+            case 4:
+                trainService->listAllTrains();
+                break;
+            case 5:
+            {
+                int id;
+                std::cout << "Enter Train ID for Emergency Stop: ";
+                std::cin >> id;
+                trainService->emergencyStop(id);
+                loggerService->logAction("EMERGENCY_STOP", "ID: " + std::to_string(id));
+                break;
+            }
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }
 
 void TerminalUI::handleCoachMenu()
