@@ -7,14 +7,14 @@
  * @brief Adjacency list based Graph for the railway network.
  * @tparam T The type of vertex data (e.g., Station name).
  */
-template<typename T>
+template <typename T>
 class Graph
 {
 private:
     struct Edge
     {
         int destinationIndex;
-        int weight; // Distance/time between stations
+        int weight;  // Distance/time between stations
     };
 
     struct Vertex
@@ -40,6 +40,16 @@ public:
     void addTrack(const T& start, const T& end, int distance);
 
     /**
+     * @brief Remove a station (vertex) and all incident tracks.
+     */
+    void removeStation(const T& station);
+
+    /**
+     * @brief Remove a track (edge) between two stations.
+     */
+    void removeTrack(const T& start, const T& end);
+
+    /**
      * @brief Find the shortest path between two stations (Dijkstra's Algorithm).
      */
     void findShortestRoute(const T& start, const T& end);
@@ -50,4 +60,4 @@ public:
     void displayNetwork() const;
 };
 
-#endif // GRAPH_HPP
+#endif  // GRAPH_HPP
