@@ -63,3 +63,7 @@ TestResults/
 [Tt]humb[Ss].db
 
 documentation
+# Iron Nexus Build Artifacts
+build/
+*.o
+iron-nexus
