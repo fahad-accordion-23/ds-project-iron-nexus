@@ -5,7 +5,22 @@ Seat::Seat(GlobalSeatNumber seatNumber, SeatStatus initialStatus)
 {
 }
 
-Seat::GlobalSeatNumber Seat::getNumber() const { return number; }
-SeatStatus Seat::getStatus() const { return status; }
-void Seat::setNumber(GlobalSeatNumber newNumber) { number = newNumber; }
-void Seat::setStatus(SeatStatus newStatus) { status = newStatus; }
+Seat::GlobalSeatNumber Seat::getNumber() const
+{
+    return number;
+}
+
+SeatStatus Seat::getStatus() const
+{
+    return status;
+}
+
+void Seat::setNumber(GlobalSeatNumber newNumber)
+{
+    number = newNumber;
+}
+
+void Seat::setStatus(SeatStatus newStatus)
+{
+    status = newStatus;
+}

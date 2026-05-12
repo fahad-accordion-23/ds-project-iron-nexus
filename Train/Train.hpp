@@ -25,7 +25,7 @@ private:
     const TrainID id;
     std::string name;
 
-    CircularDoublyLinkedList<Coach>* coaches;
+    CircularDoublyLinkedList<Coach*>* coaches;
     bool isReversed;
 
     // Seating Repository: Centralized for efficiency and synchronization
@@ -47,7 +47,7 @@ public:
     std::string getName() const;
     void setName(const std::string& trainName);
 
-    CircularDoublyLinkedList<Coach>* getCoaches() const;
+    CircularDoublyLinkedList<Coach*>* getCoaches() const;
 
     void addCoachFront(Coach* coach);
     void addCoachEnd(Coach* coach);
