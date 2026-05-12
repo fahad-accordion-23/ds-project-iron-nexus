@@ -23,7 +23,12 @@ public:
     /**
      * @brief Create and add a new station to the network.
      */
-    void createStation(const std::string& name);
+    Station::StationID createStation(const std::string& name);
+
+    /**
+     * @brief Rehydrates a station for Undo/Redo.
+     */
+    void rehydrateStation(Station::StationID id, const std::string& name);
 
     /**
      * @brief Remove a station and all its connections.

@@ -1,15 +1,17 @@
 #ifndef TERMINAL_UI_HPP
 #define TERMINAL_UI_HPP
 
-#include "../Services/TrainService.hpp"
 #include "../Services/CoachService.hpp"
+#include "../Services/LoggerService.hpp"
 #include "../Services/NetworkService.hpp"
 #include "../Services/SchedulingService.hpp"
-#include "../Services/LoggerService.hpp"
+#include "../Services/TrainService.hpp"
 
 /**
  * @brief Menu-driven Terminal User Interface for The Iron Nexus.
  */
+class UndoService;  // Forward declaration
+
 class TerminalUI
 {
 private:
@@ -18,6 +20,7 @@ private:
     NetworkService* networkService;
     SchedulingService* schedulingService;
     LoggerService* loggerService;
+    UndoService* undoService;
 
     bool running;
 
@@ -30,12 +33,14 @@ private:
     void handleSchedulingMenu();
     void handleLogsMenu();
     void handlePersistenceMenu();
+    void handleUndoRedoMenu();
 
     // Helper for input
     int getChoice();
 
 public:
-    TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss, LoggerService* ls);
+    TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss,
+               LoggerService* ls, UndoService* us);
     ~TerminalUI();
 
     /**
@@ -44,4 +49,4 @@ public:
     void start();
 };
 
-#endif // TERMINAL_UI_HPP
+#endif  // TERMINAL_UI_HPP

@@ -16,12 +16,13 @@ TrainService::~TrainService()
     delete trainRegistry;
 }
 
-void TrainService::registerTrain(const std::string& name)
+Train::TrainID TrainService::registerTrain(const std::string& name)
 {
     Train* train = Train::Register(name);
     trainRegistry->insert(train->getId(), train);
     std::cout << "[TrainService] Registered train '" << name << "' with ID: " << train->getId()
               << "\n";
+    return train->getId();
 }
 
 void TrainService::removeTrain(Train::TrainID id)
@@ -38,6 +39,13 @@ void TrainService::removeTrain(Train::TrainID id)
     {
         std::cout << "[TrainService] Error: Train ID " << id << " not found.\n";
     }
+}
+
+void TrainService::rehydrateTrain(Train::TrainID id, const std::string& name)
+{
+    // Normally we would bypass Train::Register increment, but for simplicity:
+    Train* train = Train::Rehydrate(id, name);
+    trainRegistry->insert(id, train);
 }
 
 Train* TrainService::findTrain(Train::TrainID id)

@@ -15,12 +15,19 @@ CoachService::~CoachService()
     delete coachRegistry;
 }
 
-void CoachService::createCoach(const std::string& coachName, int capacity)
+Coach::CoachID CoachService::createCoach(const std::string& coachName, int capacity)
 {
     Coach* coach = Coach::Register(coachName, capacity);
     coachRegistry->insert(coach->getId(), coach);
     std::cout << "[CoachService] Standalone Coach '" << coachName
               << "' created with ID: " << coach->getId() << " and Capacity: " << capacity << ".\n";
+    return coach->getId();
+}
+
+void CoachService::rehydrateCoach(Coach::CoachID id, const std::string& name, int capacity)
+{
+    Coach* coach = Coach::Rehydrate(id, name, capacity);
+    coachRegistry->insert(id, coach);
 }
 
 void CoachService::deleteCoach(Coach::CoachID coachId)

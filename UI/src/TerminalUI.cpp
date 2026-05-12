@@ -2,13 +2,16 @@
 
 #include <iostream>
 
+#include "../../Services/UndoService.hpp"
+
 TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns,
-                       SchedulingService* ss, LoggerService* ls)
+                       SchedulingService* ss, LoggerService* ls, UndoService* us)
     : trainService(ts),
       coachService(cs),
       networkService(ns),
       schedulingService(ss),
       loggerService(ls),
+      undoService(us),
       running(false)
 {
 }
@@ -38,6 +41,7 @@ void TerminalUI::showMainMenu()
     std::cout << "5. Scheduling (Operations)\n";
     std::cout << "6. Operation Logs (Module 5)\n";
     std::cout << "7. System Save/Load\n";
+    std::cout << "8. Undo/Redo\n";
     std::cout << "0. Exit\n";
     std::cout << "------------------------------------\n";
     std::cout << "Choice: ";
@@ -65,6 +69,9 @@ void TerminalUI::showMainMenu()
             break;
         case 7:
             handlePersistenceMenu();
+            break;
+        case 8:
+            handleUndoRedoMenu();
             break;
         case 0:
             running = false;
@@ -109,7 +116,12 @@ void TerminalUI::handleTrainMenu()
                 std::cout << "Enter Train Name: ";
                 std::cin.ignore();
                 std::getline(std::cin, name);
-                trainService->registerTrain(name);
+
+                int id = trainService->registerTrain(name);
+                if (!undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::REGISTER_TRAIN, id, -1, name);
+                }
                 loggerService->logAction("TRAIN_REGISTER", "Name: " + name);
                 break;
             }
@@ -118,6 +130,11 @@ void TerminalUI::handleTrainMenu()
                 int id;
                 std::cout << "Enter Train ID to remove: ";
                 std::cin >> id;
+                Train* t = trainService->findTrain(id);
+                if (t && !undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::REMOVE_TRAIN, id, -1, t->getName());
+                }
                 trainService->removeTrain(id);
                 loggerService->logAction("TRAIN_REMOVE", "ID: " + std::to_string(id));
                 break;
@@ -187,7 +204,12 @@ void TerminalUI::handleCoachMenu()
                 std::cout << "Enter Capacity: ";
                 std::cin >> capacity;
 
-                coachService->createCoach(name, capacity);
+                int coachId = coachService->createCoach(name, capacity);
+                if (!undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::CREATE_COACH, coachId, -1, name,
+                                              capacity);
+                }
                 loggerService->logAction("COACH_CREATE", "Coach: " + name);
                 break;
             }
@@ -272,7 +294,11 @@ void TerminalUI::handleNetworkMenu()
                 std::cout << "Enter Station Name: ";
                 std::cin.ignore();
                 std::getline(std::cin, name);
-                networkService->createStation(name);
+                int stationId = networkService->createStation(name);
+                if (!undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::CREATE_STATION, stationId, -1, name);
+                }
                 loggerService->logAction("STATION_ADD", "Name: " + name);
                 break;
             }
@@ -288,6 +314,11 @@ void TerminalUI::handleNetworkMenu()
                 std::cout << "Enter Travel Time (mins): ";
                 std::cin >> time;
                 networkService->linkStations(startId, endId, distance, time);
+                if (!undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::LINK_STATIONS, startId, endId, "",
+                                              distance, time);
+                }
                 loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) +
                                                           " To: " + std::to_string(endId));
                 break;
@@ -521,6 +552,35 @@ void TerminalUI::handlePersistenceMenu()
                 std::cout << "System state loaded successfully.\n";
                 break;
             }
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
+}
+
+void TerminalUI::handleUndoRedoMenu()
+{
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- Undo / Redo ---\n";
+        std::cout << "1. Undo Last Action\n";
+        std::cout << "2. Redo Last Action\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+                undoService->undo();
+                break;
+            case 2:
+                undoService->redo();
+                break;
             case 0:
                 back = true;
                 break;

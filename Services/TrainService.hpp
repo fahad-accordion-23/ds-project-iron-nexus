@@ -23,12 +23,17 @@ public:
     /**
      * @brief Register a new train to the fleet.
      */
-    void registerTrain(const std::string& name);
+    Train::TrainID registerTrain(const std::string& name);
 
     /**
      * @brief Decommission a train.
      */
     void removeTrain(Train::TrainID id);
+
+    /**
+     * @brief Rehydrate a deleted train (Used for Undo/Redo).
+     */
+    void rehydrateTrain(Train::TrainID id, const std::string& name);
 
     /**
      * @brief Find a specific train for commands or composition updates.

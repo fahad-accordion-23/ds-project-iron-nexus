@@ -30,7 +30,12 @@ public:
     /**
      * @brief Create a standalone coach.
      */
-    void createCoach(const std::string& coachName, int capacity);
+    Coach::CoachID createCoach(const std::string& coachName, int capacity);
+
+    /**
+     * @brief Rehydrate a deleted coach for Undo/Redo.
+     */
+    void rehydrateCoach(Coach::CoachID id, const std::string& name, int capacity);
 
     /**
      * @brief Permanently delete a coach from the registry.

@@ -17,13 +17,21 @@ NetworkService::~NetworkService()
     delete network;
 }
 
-void NetworkService::createStation(const std::string& name)
+Station::StationID NetworkService::createStation(const std::string& name)
 {
     Station* station = Station::Register(name);
     stationRegistry->insert(station->getId(), station);
     network->addStation(station);
     std::cout << "[NetworkService] Station '" << name << "' created with ID: " << station->getId()
               << "\n";
+    return station->getId();
+}
+
+void NetworkService::rehydrateStation(Station::StationID id, const std::string& name)
+{
+    Station* station = Station::Rehydrate(id, name);
+    stationRegistry->insert(id, station);
+    network->addStation(station);
 }
 
 void NetworkService::deleteStation(Station::StationID id)
