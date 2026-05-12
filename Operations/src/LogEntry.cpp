@@ -13,6 +13,11 @@ LogEntry::LogEntry(const std::string& action, const std::string& metadata)
     timestamp = ss.str();
 }
 
+LogEntry::LogEntry(const std::string& action, const std::string& ts, const std::string& metadata)
+    : action(action), timestamp(ts), metadata(metadata)
+{
+}
+
 std::string LogEntry::getAction() const { return action; }
 std::string LogEntry::getTimestamp() const { return timestamp; }
 std::string LogEntry::getMetadata() const { return metadata; }

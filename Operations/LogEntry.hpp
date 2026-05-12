@@ -15,6 +15,7 @@ private:
 
 public:
     LogEntry(const std::string& action, const std::string& metadata = "");
+    LogEntry(const std::string& action, const std::string& ts, const std::string& metadata);
 
     std::string getAction() const;
     std::string getTimestamp() const;

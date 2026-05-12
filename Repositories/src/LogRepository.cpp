@@ -89,11 +89,13 @@ void LogRepository::loadFromFile(const std::string& filename)
         size_t first = line.find('|');
         if (first == std::string::npos) continue;
         size_t second = line.find('|', first + 1);
+        if (second == std::string::npos) continue;
 
         std::string action = line.substr(0, first);
-        std::string metadata = (second != std::string::npos) ? line.substr(second + 1) : "";
+        std::string ts = line.substr(first + 1, second - first - 1);
+        std::string metadata = line.substr(second + 1);
 
-        LogEntry* entry = new LogEntry(action, metadata);
+        LogEntry* entry = new LogEntry(action, ts, metadata);
         storage->push(entry);
     }
 
