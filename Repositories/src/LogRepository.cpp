@@ -1,51 +1,11 @@
 #include "../LogRepository.hpp"
+
 #include <fstream>
-#include <iostream>
 
-LogRepository::LogRepository()
+void LogRepository::saveToFile(const std::string& filename, const Stack<LogEntry*>* storage)
 {
-    storage = new Stack<LogEntry*>();
-}
+    if (!storage) return;
 
-LogRepository::~LogRepository()
-{
-    clear();
-    delete storage;
-}
-
-void LogRepository::push(LogEntry* entry)
-{
-    storage->push(entry);
-}
-
-LogEntry* LogRepository::pop()
-{
-    if (storage->isEmpty()) return nullptr;
-    return storage->pop();
-}
-
-LogEntry* LogRepository::peek() const
-{
-    if (storage->isEmpty()) return nullptr;
-    return storage->peek();
-}
-
-bool LogRepository::isEmpty() const
-{
-    return storage->isEmpty();
-}
-
-void LogRepository::clear()
-{
-    while (!storage->isEmpty())
-    {
-        LogEntry* entry = storage->pop();
-        delete entry;
-    }
-}
-
-void LogRepository::saveToFile(const std::string& filename) const
-{
     // To save stack contents, we need a temporary stack to reverse the order
     Stack<LogEntry*> temp;
     Stack<LogEntry*>* source = const_cast<Stack<LogEntry*>*>(storage);
@@ -66,7 +26,7 @@ void LogRepository::saveToFile(const std::string& filename) const
         {
             LogEntry* e = temp.pop();
             file << e->getAction() << "|" << e->getTimestamp() << "|" << e->getMetadata() << "\n";
-            backup.push(e); // save for restoring
+            backup.push(e);  // save for restoring
         }
         file.close();
     }
@@ -78,8 +38,10 @@ void LogRepository::saveToFile(const std::string& filename) const
     }
 }
 
-void LogRepository::loadFromFile(const std::string& filename)
+void LogRepository::loadFromFile(const std::string& filename, Stack<LogEntry*>* storage)
 {
+    if (!storage) return;
+
     std::ifstream file(filename);
     if (!file.is_open()) return;
 

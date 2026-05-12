@@ -44,6 +44,12 @@ public:
      * @brief Instant command to stop a specific train (Module 1 requirement).
      */
     void emergencyStop(Train::TrainID id);
+
+    /**
+     * @brief Persistence delegation
+     */
+    void saveData(const std::string& filename) const;
+    void loadData(const std::string& filename);
 };
 
 #endif  // TRAIN_SERVICE_HPP

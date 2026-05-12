@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../../Repositories/ScheduleRepository.hpp"
+
 SchedulingService::SchedulingService()
 {
     schedule = new HashTable<Train::TrainID, Station::StationID>();
@@ -50,12 +52,25 @@ void SchedulingService::showSchedule() const
 {
     std::cout << "\n========== ACTIVE SCHEDULE ==========\n";
     int count = 0;
-    schedule->forEach([&count](Train::TrainID trainId, Station::StationID stationId) {
-        std::cout << "  Train " << trainId << " -> Station " << stationId << "\n";
-        count++;
-    });
-    if (count == 0) {
+    schedule->forEach(
+        [&count](Train::TrainID trainId, Station::StationID stationId)
+        {
+            std::cout << "  Train " << trainId << " -> Station " << stationId << "\n";
+            count++;
+        });
+    if (count == 0)
+    {
         std::cout << "  (No active routes)\n";
     }
     std::cout << "=====================================\n";
+}
+
+void SchedulingService::saveData(const std::string& filename) const
+{
+    ScheduleRepository::saveToFile(filename, schedule);
+}
+
+void SchedulingService::loadData(const std::string& filename)
+{
+    ScheduleRepository::loadFromFile(filename, schedule);
 }

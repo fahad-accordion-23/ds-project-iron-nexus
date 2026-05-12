@@ -1,59 +1,25 @@
 #include "../CoachRepository.hpp"
+
 #include <fstream>
-#include <iostream>
 
-CoachRepository::CoachRepository()
+void CoachRepository::saveToFile(const std::string& filename,
+                                 const AVLTree<Coach::CoachID, Coach*>* storage)
 {
-    storage = new AVLTree<Coach::CoachID, Coach*>();
-}
-
-CoachRepository::~CoachRepository()
-{
-    delete storage;
-}
-
-void CoachRepository::add(Coach* coach)
-{
-    storage->insert(coach->getId(), coach);
-}
-
-void CoachRepository::remove(Coach::CoachID id)
-{
-    storage->remove(id);
-}
-
-Coach* CoachRepository::find(Coach::CoachID id) const
-{
-    try {
-        return storage->search(id);
-    } catch (...) {
-        return nullptr;
-    }
-}
-
-int CoachRepository::getCount() const
-{
-    int count = 0;
-    storage->traverseInOrder([&count](Coach::CoachID, Coach*) {
-        count++;
-    });
-    return count;
-}
-
-void CoachRepository::saveToFile(const std::string& filename) const
-{
+    if (!storage) return;
     std::ofstream file(filename);
     if (!file.is_open()) return;
 
-    storage->traverseInOrder([&file](Coach::CoachID id, Coach* coach) {
-        file << id << "," << coach->getName() << "," << coach->getCapacity() << "\n";
-    });
+    storage->traverseInOrder(
+        [&file](Coach::CoachID id, Coach* coach)
+        { file << id << "," << coach->getName() << "," << coach->getCapacity() << "\n"; });
 
     file.close();
 }
 
-void CoachRepository::loadFromFile(const std::string& filename)
+void CoachRepository::loadFromFile(const std::string& filename,
+                                   AVLTree<Coach::CoachID, Coach*>* storage)
 {
+    if (!storage) return;
     std::ifstream file(filename);
     if (!file.is_open()) return;
 

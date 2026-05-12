@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../../Repositories/LogRepository.hpp"
+
 LoggerService::LoggerService()
 {
     history = new Stack<LogEntry*>();
@@ -60,3 +62,14 @@ void LoggerService::clearLogs()
         delete entry;
     }
 }
+
+void LoggerService::saveData(const std::string& filename) const
+{
+    LogRepository::saveToFile(filename, history);
+}
+
+void LoggerService::loadData(const std::string& filename)
+{
+    LogRepository::loadFromFile(filename, history);
+}
+

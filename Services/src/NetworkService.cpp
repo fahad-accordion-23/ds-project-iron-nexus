@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../../Repositories/StationRepository.hpp"
+
 NetworkService::NetworkService()
 {
     network = new RailwayNetwork();
@@ -63,6 +65,16 @@ void NetworkService::suggestRoute(Station::StationID startId, Station::StationID
     std::cout << "  Mode: " << (fastTrack ? "Fastest Time" : "Shortest Distance") << "\n";
     network->findOptimalRoute(startId, endId, fastTrack);
     std::cout << "=======================================\n";
+}
+
+void NetworkService::saveData(const std::string& filename) const
+{
+    StationRepository::saveToFile(filename, stationRegistry);
+}
+
+void NetworkService::loadData(const std::string& filename)
+{
+    StationRepository::loadFromFile(filename, stationRegistry);
 }
 
 void NetworkService::showNetwork() const

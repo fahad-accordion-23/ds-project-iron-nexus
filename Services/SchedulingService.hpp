@@ -1,9 +1,9 @@
 #ifndef SCHEDULING_SERVICE_HPP
 #define SCHEDULING_SERVICE_HPP
 
-#include "../Train/Train.hpp"
 #include "../Railway/Station.hpp"
 #include "../Structures/HashTable.hpp"
+#include "../Train/Train.hpp"
 
 /**
  * @brief Application service for assigning trains to specific routes in the network.
@@ -35,10 +35,13 @@ public:
      */
     Station::StationID getDestination(Train::TrainID trainId) const;
 
-    /**
-     * @brief Display the current schedule for all trains.
-     */
     void showSchedule() const;
+
+    /**
+     * @brief Persistence delegation
+     */
+    void saveData(const std::string& filename) const;
+    void loadData(const std::string& filename);
 };
 
-#endif // SCHEDULING_SERVICE_HPP
+#endif  // SCHEDULING_SERVICE_HPP

@@ -2,6 +2,7 @@
 #define NETWORK_SERVICE_HPP
 
 #include <string>
+
 #include "../Railway/RailwayNetwork.hpp"
 #include "../Railway/Station.hpp"
 #include "../Structures/AVLTree.hpp"
@@ -13,7 +14,7 @@ class NetworkService
 {
 private:
     RailwayNetwork* network;
-    AVLTree<Station::StationID, Station*>* stationRegistry; // For O(log N) station lookups
+    AVLTree<Station::StationID, Station*>* stationRegistry;  // For O(log N) station lookups
 
 public:
     NetworkService();
@@ -40,6 +41,18 @@ public:
     void unlinkStations(Station::StationID startId, Station::StationID endId);
 
     /**
+     * @brief Find and display the shortest path using Dijkstra's algorithm.
+     */
+    void getShortestPath(Station::StationID startId, Station::StationID endId,
+                         bool optimizeForTime);
+
+    /**
+     * @brief Persistence delegation
+     */
+    void saveData(const std::string& filename) const;
+    void loadData(const std::string& filename);
+
+    /**
      * @brief Suggest the best route between two stations.
      */
     void suggestRoute(Station::StationID startId, Station::StationID endId, bool fastTrack = false);
@@ -50,4 +63,4 @@ public:
     void showNetwork() const;
 };
 
-#endif // NETWORK_SERVICE_HPP
+#endif  // NETWORK_SERVICE_HPP

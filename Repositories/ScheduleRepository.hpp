@@ -1,37 +1,22 @@
 #ifndef SCHEDULE_REPOSITORY_HPP
 #define SCHEDULE_REPOSITORY_HPP
 
-#include "../Train/Train.hpp"
+#include <string>
+
 #include "../Railway/Station.hpp"
 #include "../Structures/HashTable.hpp"
+#include "../Train/Train.hpp"
 
 /**
- * @brief Data Access Layer for managing train-to-route assignments.
+ * @brief Stateless utility for train-to-route assignment persistence.
  */
 class ScheduleRepository
 {
-private:
-    HashTable<Train::TrainID, Station::StationID>* storage;
-
 public:
-    ScheduleRepository();
-    ~ScheduleRepository();
-
-    void setAssignment(Train::TrainID trainId, Station::StationID stationId);
-    void removeAssignment(Train::TrainID trainId);
-    Station::StationID getAssignment(Train::TrainID trainId) const;
-    
-    bool hasAssignment(Train::TrainID trainId) const;
-
-    /**
-     * @brief Save current schedule to a file.
-     */
-    void saveToFile(const std::string& filename) const;
-
-    /**
-     * @brief Load schedule from a file.
-     */
-    void loadFromFile(const std::string& filename);
+    static void saveToFile(const std::string& filename,
+                           const HashTable<Train::TrainID, Station::StationID>* storage);
+    static void loadFromFile(const std::string& filename,
+                             HashTable<Train::TrainID, Station::StationID>* storage);
 };
 
-#endif // SCHEDULE_REPOSITORY_HPP
+#endif  // SCHEDULE_REPOSITORY_HPP

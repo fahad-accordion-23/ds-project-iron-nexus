@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../../Repositories/TrainRepository.hpp"
+
 TrainService::TrainService()
 {
     trainRegistry = new AVLTree<Train::TrainID, Train*>();
@@ -83,4 +85,14 @@ void TrainService::emergencyStop(Train::TrainID id)
     {
         std::cout << "[EMERGENCY] Error: Train ID " << id << " not found.\n";
     }
+}
+
+void TrainService::saveData(const std::string& filename) const
+{
+    TrainRepository::saveToFile(filename, trainRegistry);
+}
+
+void TrainService::loadData(const std::string& filename)
+{
+    TrainRepository::loadFromFile(filename, trainRegistry);
 }

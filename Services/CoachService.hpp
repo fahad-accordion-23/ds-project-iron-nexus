@@ -58,6 +58,12 @@ public:
      * @brief Display the ordered seating chart for a specific train.
      */
     void viewSeatingChart(Train::TrainID trainId) const;
+
+    /**
+     * @brief Persistence delegation
+     */
+    void saveData(const std::string& filename) const;
+    void loadData(const std::string& filename);
 };
 
 #endif  // COACH_SERVICE_HPP

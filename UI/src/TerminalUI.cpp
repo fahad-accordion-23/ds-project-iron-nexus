@@ -1,8 +1,9 @@
 #include "../TerminalUI.hpp"
+
 #include <iostream>
 
-TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss,
-                       LoggerService* ls)
+TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns,
+                       SchedulingService* ss, LoggerService* ls)
     : trainService(ts),
       coachService(cs),
       networkService(ns),
@@ -12,7 +13,9 @@ TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, S
 {
 }
 
-TerminalUI::~TerminalUI() {}
+TerminalUI::~TerminalUI()
+{
+}
 
 void TerminalUI::start()
 {

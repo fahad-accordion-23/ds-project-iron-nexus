@@ -29,9 +29,15 @@ public:
     void showRecentLogs(int count = 10);
 
     /**
-     * @brief Clear the operation history.
+     * @brief Clear all logs.
      */
     void clearLogs();
+
+    /**
+     * @brief Persistence delegation
+     */
+    void saveData(const std::string& filename) const;
+    void loadData(const std::string& filename);
 };
 
-#endif // LOGGER_SERVICE_HPP
+#endif  // LOGGER_SERVICE_HPP

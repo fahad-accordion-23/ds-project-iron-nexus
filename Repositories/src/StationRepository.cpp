@@ -1,59 +1,24 @@
 #include "../StationRepository.hpp"
+
 #include <fstream>
-#include <iostream>
 
-StationRepository::StationRepository()
+void StationRepository::saveToFile(const std::string& filename,
+                                   const AVLTree<Station::StationID, Station*>* storage)
 {
-    storage = new AVLTree<Station::StationID, Station*>();
-}
-
-StationRepository::~StationRepository()
-{
-    delete storage;
-}
-
-void StationRepository::add(Station* station)
-{
-    storage->insert(station->getId(), station);
-}
-
-void StationRepository::remove(Station::StationID id)
-{
-    storage->remove(id);
-}
-
-Station* StationRepository::find(Station::StationID id) const
-{
-    try {
-        return storage->search(id);
-    } catch (...) {
-        return nullptr;
-    }
-}
-
-int StationRepository::getCount() const
-{
-    int count = 0;
-    storage->traverseInOrder([&count](Station::StationID, Station*) {
-        count++;
-    });
-    return count;
-}
-
-void StationRepository::saveToFile(const std::string& filename) const
-{
+    if (!storage) return;
     std::ofstream file(filename);
     if (!file.is_open()) return;
 
-    storage->traverseInOrder([&file](Station::StationID id, Station* station) {
-        file << id << "," << station->getName() << "\n";
-    });
+    storage->traverseInOrder([&file](Station::StationID id, Station* station)
+                             { file << id << "," << station->getName() << "\n"; });
 
     file.close();
 }
 
-void StationRepository::loadFromFile(const std::string& filename)
+void StationRepository::loadFromFile(const std::string& filename,
+                                     AVLTree<Station::StationID, Station*>* storage)
 {
+    if (!storage) return;
     std::ifstream file(filename);
     if (!file.is_open()) return;
 

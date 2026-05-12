@@ -1,8 +1,10 @@
 #include "../CoachService.hpp"
+
 #include <iostream>
 
-    CoachService::CoachService(TrainService* ts)
-    : trainService(ts)
+#include "../../Repositories/CoachRepository.hpp"
+
+CoachService::CoachService(TrainService* ts) : trainService(ts)
 {
     coachRegistry = new AVLTree<Coach::CoachID, Coach*>();
 }

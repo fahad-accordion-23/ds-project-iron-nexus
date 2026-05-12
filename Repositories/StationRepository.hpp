@@ -1,38 +1,21 @@
 #ifndef STATION_REPOSITORY_HPP
 #define STATION_REPOSITORY_HPP
 
+#include <string>
+
 #include "../Railway/Station.hpp"
 #include "../Structures/AVLTree.hpp"
 
 /**
- * @brief Data Access Layer for managing Stations in the network.
+ * @brief Stateless utility for Station registry persistence.
  */
 class StationRepository
 {
-private:
-    AVLTree<Station::StationID, Station*>* storage;
-
 public:
-    StationRepository();
-    ~StationRepository();
-
-    void add(Station* station);
-    void remove(Station::StationID id);
-    Station* find(Station::StationID id) const;
-    template<typename Func>
-    void getAll(Func callback) const { storage->traverseInOrder(callback); }
-    
-    int getCount() const;
-
-    /**
-     * @brief Save all stations to a file.
-     */
-    void saveToFile(const std::string& filename) const;
-
-    /**
-     * @brief Load stations from a file.
-     */
-    void loadFromFile(const std::string& filename);
+    static void saveToFile(const std::string& filename,
+                           const AVLTree<Station::StationID, Station*>* storage);
+    static void loadFromFile(const std::string& filename,
+                             AVLTree<Station::StationID, Station*>* storage);
 };
 
-#endif // STATION_REPOSITORY_HPP
+#endif  // STATION_REPOSITORY_HPP

@@ -1,37 +1,18 @@
 #ifndef LOG_REPOSITORY_HPP
 #define LOG_REPOSITORY_HPP
 
+#include <string>
 #include "../Operations/LogEntry.hpp"
 #include "../Structures/Stack.hpp"
 
 /**
- * @brief Data Access Layer for managing system operation logs.
+ * @brief Stateless utility for system operation logs persistence.
  */
 class LogRepository
 {
-private:
-    Stack<LogEntry*>* storage;
-
 public:
-    LogRepository();
-    ~LogRepository();
-
-    void push(LogEntry* entry);
-    LogEntry* pop();
-    LogEntry* peek() const;
-    
-    bool isEmpty() const;
-    void clear();
-
-    /**
-     * @brief Save log history to a file.
-     */
-    void saveToFile(const std::string& filename) const;
-
-    /**
-     * @brief Load log history from a file.
-     */
-    void loadFromFile(const std::string& filename);
+    static void saveToFile(const std::string& filename, const Stack<LogEntry*>* storage);
+    static void loadFromFile(const std::string& filename, Stack<LogEntry*>* storage);
 };
 
 #endif // LOG_REPOSITORY_HPP
