@@ -22,6 +22,16 @@ public:
     void getAll(void (*callback)(Train::TrainID, Train*)) const;
     
     int getCount() const;
+
+    /**
+     * @brief Save all trains to a file.
+     */
+    void saveToFile(const std::string& filename) const;
+
+    /**
+     * @brief Load trains from a file.
+     */
+    void loadFromFile(const std::string& filename);
 };
 
 #endif // TRAIN_REPOSITORY_HPP

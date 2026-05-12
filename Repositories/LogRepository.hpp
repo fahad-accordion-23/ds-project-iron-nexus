@@ -22,6 +22,16 @@ public:
     
     bool isEmpty() const;
     void clear();
+
+    /**
+     * @brief Save log history to a file.
+     */
+    void saveToFile(const std::string& filename) const;
+
+    /**
+     * @brief Load log history from a file.
+     */
+    void loadFromFile(const std::string& filename);
 };
 
 #endif // LOG_REPOSITORY_HPP

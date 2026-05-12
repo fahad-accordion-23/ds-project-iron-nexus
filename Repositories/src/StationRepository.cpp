@@ -7,3 +7,5 @@ void StationRepository::remove(Station::StationID id) {}
 Station* StationRepository::find(Station::StationID id) const { return nullptr; }
 void StationRepository::getAll(void (*callback)(Station::StationID, Station*)) const {}
 int StationRepository::getCount() const { return 0; }
+void StationRepository::saveToFile(const std::string& filename) const {}
+void StationRepository::loadFromFile(const std::string& filename) {}

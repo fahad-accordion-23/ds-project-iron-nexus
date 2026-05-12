@@ -22,6 +22,16 @@ public:
     void getAll(void (*callback)(Station::StationID, Station*)) const;
     
     int getCount() const;
+
+    /**
+     * @brief Save all stations to a file.
+     */
+    void saveToFile(const std::string& filename) const;
+
+    /**
+     * @brief Load stations from a file.
+     */
+    void loadFromFile(const std::string& filename);
 };
 
 #endif // STATION_REPOSITORY_HPP

@@ -7,3 +7,5 @@ void TrainRepository::remove(Train::TrainID id) {}
 Train* TrainRepository::find(Train::TrainID id) const { return nullptr; }
 void TrainRepository::getAll(void (*callback)(Train::TrainID, Train*)) const {}
 int TrainRepository::getCount() const { return 0; }
+void TrainRepository::saveToFile(const std::string& filename) const {}
+void TrainRepository::loadFromFile(const std::string& filename) {}

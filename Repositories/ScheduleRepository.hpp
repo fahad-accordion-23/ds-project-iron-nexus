@@ -22,6 +22,16 @@ public:
     Station::StationID getAssignment(Train::TrainID trainId) const;
     
     bool hasAssignment(Train::TrainID trainId) const;
+
+    /**
+     * @brief Save current schedule to a file.
+     */
+    void saveToFile(const std::string& filename) const;
+
+    /**
+     * @brief Load schedule from a file.
+     */
+    void loadFromFile(const std::string& filename);
 };
 
 #endif // SCHEDULE_REPOSITORY_HPP

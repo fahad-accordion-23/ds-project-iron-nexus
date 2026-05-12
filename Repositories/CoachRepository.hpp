@@ -21,6 +21,16 @@ public:
     Coach* find(Coach::CoachID id) const;
     
     int getCount() const;
+
+    /**
+     * @brief Save all coaches to a file.
+     */
+    void saveToFile(const std::string& filename) const;
+
+    /**
+     * @brief Load coaches from a file.
+     */
+    void loadFromFile(const std::string& filename);
 };
 
 #endif // COACH_REPOSITORY_HPP
