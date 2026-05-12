@@ -35,8 +35,7 @@ void CoachService::deleteCoach(Coach::CoachID coachId)
     try
     {
         Coach* coach = coachRegistry->search(coachId);
-        // Note: A robust system should unlink it from any train first.
-        // For now we assume it's standalone or handled properly.
+
         coachRegistry->remove(coachId);
         std::cout << "[CoachService] Coach '" << coach->getName() << "' (ID: " << coachId
                   << ") deleted.\n";

@@ -1,11 +1,6 @@
 #ifndef AVL_TREE_HPP
 #define AVL_TREE_HPP
 
-/**
- * @brief A self-balancing AVL Tree for the high-capacity Train Registry.
- * @tparam K Key type (e.g., TrainID)
- * @tparam V Value type (e.g., Train*)
- */
 template <typename K, typename V>
 class AVLTree
 {
@@ -25,7 +20,6 @@ private:
 
     Node* root;
 
-    // AVL Internal balancing operations
     int getHeight(Node* n) const;
     int getBalanceFactor(Node* n) const;
     Node* rotateRight(Node* y);
@@ -44,10 +38,6 @@ public:
     void remove(K key);
     V search(K key) const;
 
-    /**
-     * @brief Perform an in-order traversal.
-     * Accepts any callable: lambda, functor, or function pointer.
-     */
     template <typename Func>
     void traverseInOrder(Func callback) const;
 
@@ -134,20 +124,16 @@ typename AVLTree<K, V>::Node* AVLTree<K, V>::balance(Node* n)
 
     int balanceFactor = getBalanceFactor(n);
 
-    // Left Left Case
     if (balanceFactor > 1 && getBalanceFactor(n->left) >= 0) return rotateRight(n);
 
-    // Left Right Case
     if (balanceFactor > 1 && getBalanceFactor(n->left) < 0)
     {
         n->left = rotateLeft(n->left);
         return rotateRight(n);
     }
 
-    // Right Right Case
     if (balanceFactor < -1 && getBalanceFactor(n->right) <= 0) return rotateLeft(n);
 
-    // Right Left Case
     if (balanceFactor < -1 && getBalanceFactor(n->right) > 0)
     {
         n->right = rotateRight(n->right);
@@ -198,13 +184,11 @@ typename AVLTree<K, V>::Node* AVLTree<K, V>::remove(Node* node, K key)
 
             if (child == nullptr)
             {
-                // No children: simply delete the leaf node
                 delete node;
                 node = nullptr;
             }
             else
             {
-                // One child: copy child's data up then delete the child
                 node->key = child->key;
                 node->value = child->value;
                 node->left = child->left;
@@ -296,4 +280,4 @@ bool AVLTree<K, V>::isEmpty() const
     return root == nullptr;
 }
 
-#endif  // AVL_TREE_HPP
+#endif

@@ -8,7 +8,6 @@
 
 int main()
 {
-    // Initialize Services
     TrainService trainService;
     CoachService coachService(&trainService);
     NetworkService networkService;
@@ -16,7 +15,6 @@ int main()
     LoggerService loggerService;
     UndoService undoService(&trainService, &coachService, &networkService, &schedulingService);
 
-    // Initialize and Start UI
     TerminalUI ui(&trainService, &coachService, &networkService, &schedulingService, &loggerService,
                   &undoService);
     ui.start();

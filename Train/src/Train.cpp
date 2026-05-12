@@ -3,11 +3,10 @@
 Train::TrainID Train::nextId = 1000;
 
 Train::Train(TrainID trainId, const std::string& trainName)
-    : id(trainId), name(trainName), isReversed(false), 
-      currentSeatSize(0), totalSeatCapacity(0)
+    : id(trainId), name(trainName), isReversed(false), currentSeatSize(0), totalSeatCapacity(0)
 {
     coaches = new CircularDoublyLinkedList<Coach*>();
-    seatLookup = new HashTable<Seat::GlobalSeatNumber, Seat*>(200); // Initial capacity
+    seatLookup = new HashTable<Seat::GlobalSeatNumber, Seat*>(200);
     seatTree = new BST<Seat::GlobalSeatNumber, Seat*>();
 }
 
@@ -24,23 +23,33 @@ Train* Train::Rehydrate(TrainID id, const std::string& name)
 
 Train::~Train()
 {
-    // Note: In a real system, we'd delete the coaches and seats here.
-    // For this implementation, we assume management is handled by services or repositories.
     delete coaches;
     delete seatLookup;
     delete seatTree;
 }
 
-Train::TrainID Train::getId() const { return id; }
-std::string Train::getName() const { return name; }
-void Train::setName(const std::string& trainName) { name = trainName; }
+Train::TrainID Train::getId() const
+{
+    return id;
+}
+std::string Train::getName() const
+{
+    return name;
+}
+void Train::setName(const std::string& trainName)
+{
+    name = trainName;
+}
 
-CircularDoublyLinkedList<Coach*>* Train::getCoaches() const { return coaches; }
+CircularDoublyLinkedList<Coach*>* Train::getCoaches() const
+{
+    return coaches;
+}
 
 void Train::addCoachFront(Coach* coach)
 {
     coaches->addFront(coach);
-    // Populate seating repository with new seats starting after current total
+
     int startNum = totalSeatCapacity + 1;
     for (int i = 0; i < coach->getCapacity(); i++)
     {
@@ -82,19 +91,14 @@ void Train::insertCoach(Coach* coach, int position)
 
 Coach* Train::removeCoach(int position)
 {
-    // Removing a coach in this model is complex because seats are globally indexed.
-    // For the skeleton, we remove from the list. 
-    // Real logic would involve pruning the seat repositories.
     if (position < 0 || position >= coaches->size()) return nullptr;
-    
+
     Coach* coach = coaches->getAt(position);
     coaches->removeAt(position);
-    
-    // Simple pruning: total capacity reduced, though seat numbers 
-    // for this specific coach are now "orphaned" in the repository.
+
     totalSeatCapacity -= coach->getCapacity();
     currentSeatSize -= coach->getCapacity();
-    
+
     return coach;
 }
 
@@ -106,9 +110,12 @@ void Train::reverseOrientation()
 
 Seat* Train::findSeat(Seat::GlobalSeatNumber globalNumber)
 {
-    try {
+    try
+    {
         return seatLookup->search(globalNumber);
-    } catch (...) {
+    }
+    catch (...)
+    {
         return nullptr;
     }
 }

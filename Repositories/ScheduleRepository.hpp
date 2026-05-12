@@ -7,9 +7,6 @@
 #include "../Structures/HashTable.hpp"
 #include "../Train/Train.hpp"
 
-/**
- * @brief Stateless utility for train-to-route assignment persistence.
- */
 class ScheduleRepository
 {
 public:
@@ -19,4 +16,4 @@ public:
                              HashTable<Train::TrainID, Station::StationID>* storage);
 };
 
-#endif  // SCHEDULE_REPOSITORY_HPP
+#endif

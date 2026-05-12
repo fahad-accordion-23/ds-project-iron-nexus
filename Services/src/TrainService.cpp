@@ -11,7 +11,6 @@ TrainService::TrainService()
 
 TrainService::~TrainService()
 {
-    // Clean up all trains in the registry
     trainRegistry->traverseInOrder([](Train::TrainID, Train* train) { delete train; });
     delete trainRegistry;
 }
@@ -43,7 +42,6 @@ void TrainService::removeTrain(Train::TrainID id)
 
 void TrainService::rehydrateTrain(Train::TrainID id, const std::string& name)
 {
-    // Normally we would bypass Train::Register increment, but for simplicity:
     Train* train = Train::Rehydrate(id, name);
     trainRegistry->insert(id, train);
 }

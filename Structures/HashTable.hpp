@@ -1,11 +1,6 @@
 #ifndef HASH_TABLE_HPP
 #define HASH_TABLE_HPP
 
-/**
- * @brief A custom Hash Table for O(1) seat lookups.
- * @tparam K Key type
- * @tparam V Value type
- */
 template <typename K, typename V>
 class HashTable
 {
@@ -14,7 +9,7 @@ private:
     {
         K key;
         V value;
-        Entry* next;  // For separate chaining
+        Entry* next;
 
         Entry(K k, V v) : key(k), value(v), next(nullptr)
         {
@@ -25,44 +20,21 @@ private:
     int capacity;
     int size;
 
-    /**
-     * @brief Simple hash function for keys.
-     */
     int hash(K key) const;
 
 public:
-    /**
-     * @brief Construct a new Hash Table.
-     * @param initialCapacity Starting size of the table.
-     */
     HashTable(int initialCapacity = 101);
     ~HashTable();
 
-    /**
-     * @brief Insert or update a key-value pair.
-     */
     void insert(K key, V value);
 
-    /**
-     * @brief Remove an entry by its key.
-     */
     void remove(K key);
 
-    /**
-     * @brief Retrieve a value by its key.
-     */
     V search(K key) const;
 
-    /**
-     * @brief Resize the table when load factor is exceeded.
-     */
     void rehash();
 
-    /**
-     * @brief Execute a callback for each entry in the table.
-     * Accepts any callable: lambda, functor, or function pointer.
-     */
-    template<typename Func>
+    template <typename Func>
     void forEach(Func callback) const;
 
     int getSize() const;
@@ -70,7 +42,7 @@ public:
     void clear();
 };
 
-#include <functional>  // For std::hash
+#include <functional>
 #include <stdexcept>
 
 template <typename K, typename V>
@@ -93,7 +65,6 @@ HashTable<K, V>::~HashTable()
 template <typename K, typename V>
 int HashTable<K, V>::hash(K key) const
 {
-    // Cast to unsigned to avoid negative modulo results from signed overflow
     size_t h = std::hash<K>{}(key);
     return static_cast<int>(h % static_cast<size_t>(capacity));
 }
@@ -101,7 +72,6 @@ int HashTable<K, V>::hash(K key) const
 template <typename K, typename V>
 void HashTable<K, V>::insert(K key, V value)
 {
-    // Rehash when load factor exceeds 75% (integer arithmetic avoids float)
     if (size * 4 >= capacity * 3)
     {
         rehash();
@@ -110,7 +80,6 @@ void HashTable<K, V>::insert(K key, V value)
     int index = hash(key);
     Entry* current = table[index];
 
-    // Update if exists
     while (current != nullptr)
     {
         if (current->key == key)
@@ -121,7 +90,6 @@ void HashTable<K, V>::insert(K key, V value)
         current = current->next;
     }
 
-    // Insert new entry at head of list
     Entry* newEntry = new Entry(key, value);
     newEntry->next = table[index];
     table[index] = newEntry;
@@ -245,4 +213,4 @@ void HashTable<K, V>::clear()
     size = 0;
 }
 
-#endif  // HASH_TABLE_HPP
+#endif

@@ -52,7 +52,6 @@ private:
     NetworkService* networkService;
     SchedulingService* schedulingService;
 
-    // Prevents recording actions while we are currently undoing/redoing
     bool isUndoingRedoing;
 
     void executeAction(UndoAction* action, bool isUndo);
@@ -73,4 +72,4 @@ public:
     }
 };
 
-#endif  // UNDO_SERVICE_HPP
+#endif

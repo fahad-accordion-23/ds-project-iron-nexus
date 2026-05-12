@@ -3,11 +3,6 @@
 
 #include <stdexcept>
 
-/**
- * @brief A standard Binary Search Tree for ordered seating chart views.
- * @tparam K Key type (e.g., GlobalSeatNumber)
- * @tparam V Value type (e.g., Seat*)
- */
 template <typename K, typename V>
 class BST
 {
@@ -26,7 +21,6 @@ private:
 
     Node* root;
 
-    // Helper methods for recursive operations
     Node* insert(Node* node, K key, V value);
     Node* remove(Node* node, K key);
     Node* find(Node* node, K key) const;
@@ -36,36 +30,17 @@ public:
     BST();
     ~BST();
 
-    /**
-     * @brief Insert a key-value pair into the tree.
-     */
     void insert(K key, V value);
 
-    /**
-     * @brief Remove a node by its key.
-     */
     void remove(K key);
 
-    /**
-     * @brief Search for a value associated with a key.
-     */
     V search(K key) const;
 
-    /**
-     * @brief Perform an in-order traversal (Left, Root, Right).
-     * Accepts any callable: lambda, functor, or function pointer.
-     */
     template <typename Func>
     void traverseInOrder(Func callback) const;
 
-    /**
-     * @brief Clear all nodes from the tree.
-     */
     void clear();
 
-    /**
-     * @brief Check if the tree is empty.
-     */
     bool isEmpty() const;
 };
 
@@ -97,7 +72,7 @@ typename BST<K, V>::Node* BST<K, V>::insert(Node* node, K key, V value)
     }
     else
     {
-        node->value = value;  // Update value if key exists
+        node->value = value;
     }
     return node;
 }
@@ -123,7 +98,6 @@ typename BST<K, V>::Node* BST<K, V>::remove(Node* node, K key)
     }
     else
     {
-        // Node to be deleted found
         if (node->left == nullptr)
         {
             Node* temp = node->right;
@@ -137,7 +111,6 @@ typename BST<K, V>::Node* BST<K, V>::remove(Node* node, K key)
             return temp;
         }
 
-        // Node with two children: Get inorder successor
         Node* temp = node->right;
         while (temp && temp->left != nullptr)
         {
@@ -185,7 +158,6 @@ template <typename K, typename V>
 template <typename Func>
 void BST<K, V>::traverseInOrder(Func callback) const
 {
-    // Lambda for recursive in-order traversal
     struct InOrder
     {
         static void traverse(Node* node, Func& cb)
@@ -225,4 +197,4 @@ bool BST<K, V>::isEmpty() const
     return root == nullptr;
 }
 
-#endif  // BST_HPP
+#endif

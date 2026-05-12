@@ -6,9 +6,6 @@
 #include "../Railway/Station.hpp"
 #include "../Structures/AVLTree.hpp"
 
-/**
- * @brief Stateless utility for Station registry persistence.
- */
 class StationRepository
 {
 public:
@@ -18,4 +15,4 @@ public:
                              AVLTree<Station::StationID, Station*>* storage);
 };
 
-#endif  // STATION_REPOSITORY_HPP
+#endif

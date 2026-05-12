@@ -89,7 +89,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
             break;
 
         case ActionType::REVERSE_TRAIN:
-            coachService->reverseTrain(action->primaryId);  // reversing is symmetric
+            coachService->reverseTrain(action->primaryId);
             break;
 
         case ActionType::CREATE_STATION:

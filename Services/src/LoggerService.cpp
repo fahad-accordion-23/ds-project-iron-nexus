@@ -32,7 +32,6 @@ void LoggerService::showRecentLogs(int count)
         return;
     }
 
-    // Pop entries into a temp stack, display them, then push back
     Stack<LogEntry*> temp;
     int displayed = 0;
 
@@ -44,7 +43,6 @@ void LoggerService::showRecentLogs(int count)
         displayed++;
     }
 
-    // Restore entries back to history
     while (!temp.isEmpty())
     {
         history->push(temp.pop());

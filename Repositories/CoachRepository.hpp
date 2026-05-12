@@ -6,9 +6,6 @@
 #include "../Structures/AVLTree.hpp"
 #include "../Train/Coach.hpp"
 
-/**
- * @brief Stateless utility for Coach registry persistence.
- */
 class CoachRepository
 {
 public:
@@ -17,4 +14,4 @@ public:
     static void loadFromFile(const std::string& filename, AVLTree<Coach::CoachID, Coach*>* storage);
 };
 
-#endif  // COACH_REPOSITORY_HPP
+#endif

@@ -7,10 +7,7 @@
 #include "../Services/SchedulingService.hpp"
 #include "../Services/TrainService.hpp"
 
-/**
- * @brief Menu-driven Terminal User Interface for The Iron Nexus.
- */
-class UndoService;  // Forward declaration
+class UndoService;
 
 class TerminalUI
 {
@@ -24,7 +21,6 @@ private:
 
     bool running;
 
-    // Menu handlers
     void showMainMenu();
     void handleTrainMenu();
     void handleCoachMenu();
@@ -35,7 +31,6 @@ private:
     void handlePersistenceMenu();
     void handleUndoRedoMenu();
 
-    // Helper for input
     int getChoice();
 
 public:
@@ -43,10 +38,7 @@ public:
                LoggerService* ls, UndoService* us);
     ~TerminalUI();
 
-    /**
-     * @brief Starts the UI loop.
-     */
     void start();
 };
 
-#endif  // TERMINAL_UI_HPP
+#endif

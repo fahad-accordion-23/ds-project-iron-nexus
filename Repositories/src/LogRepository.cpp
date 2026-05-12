@@ -6,12 +6,10 @@ void LogRepository::saveToFile(const std::string& filename, const Stack<LogEntry
 {
     if (!storage) return;
 
-    // To save stack contents, we need a temporary stack to reverse the order
     Stack<LogEntry*> temp;
     Stack<LogEntry*>* source = const_cast<Stack<LogEntry*>*>(storage);
     Stack<LogEntry*> backup;
 
-    // Move all to temp (reversed order)
     while (!source->isEmpty())
     {
         LogEntry* e = source->pop();
@@ -21,17 +19,15 @@ void LogRepository::saveToFile(const std::string& filename, const Stack<LogEntry
     std::ofstream file(filename);
     if (file.is_open())
     {
-        // Write from temp (original order, oldest first)
         while (!temp.isEmpty())
         {
             LogEntry* e = temp.pop();
             file << e->getAction() << "|" << e->getTimestamp() << "|" << e->getMetadata() << "\n";
-            backup.push(e);  // save for restoring
+            backup.push(e);
         }
         file.close();
     }
 
-    // Restore original stack
     while (!backup.isEmpty())
     {
         source->push(backup.pop());

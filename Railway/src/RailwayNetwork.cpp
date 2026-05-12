@@ -1,39 +1,51 @@
 #include "../RailwayNetwork.hpp"
+
 #include <iostream>
 
-RailwayNetwork::RailwayNetwork() {
+RailwayNetwork::RailwayNetwork()
+{
     network = new Graph<Station*>();
     stationList = new CircularDoublyLinkedList<Station*>();
 }
 
-RailwayNetwork::~RailwayNetwork() {
+RailwayNetwork::~RailwayNetwork()
+{
     delete network;
     delete stationList;
 }
 
-Station* RailwayNetwork::findStationById(Station::StationID id) const {
-    for (int i = 0; i < stationList->size(); i++) {
-        if (stationList->getAt(i)->getId() == id) {
+Station* RailwayNetwork::findStationById(Station::StationID id) const
+{
+    for (int i = 0; i < stationList->size(); i++)
+    {
+        if (stationList->getAt(i)->getId() == id)
+        {
             return stationList->getAt(i);
         }
     }
     return nullptr;
 }
 
-void RailwayNetwork::addStation(Station* station) {
-    if (stationList->size() >= MAX_HUBS) {
+void RailwayNetwork::addStation(Station* station)
+{
+    if (stationList->size() >= MAX_HUBS)
+    {
         throw std::runtime_error("Maximum station capacity reached");
     }
     stationList->addEnd(station);
     network->addNode(station);
 }
 
-void RailwayNetwork::removeStation(Station::StationID id) {
+void RailwayNetwork::removeStation(Station::StationID id)
+{
     Station* station = findStationById(id);
-    if (station) {
+    if (station)
+    {
         network->removeNode(station);
-        for (int i = 0; i < stationList->size(); i++) {
-            if (stationList->getAt(i)->getId() == id) {
+        for (int i = 0; i < stationList->size(); i++)
+        {
+            if (stationList->getAt(i)->getId() == id)
+            {
                 stationList->removeAt(i);
                 break;
             }
@@ -41,32 +53,40 @@ void RailwayNetwork::removeStation(Station::StationID id) {
     }
 }
 
-void RailwayNetwork::connectStations(Station::StationID startId, Station::StationID endId, int distance, int travelTime) {
+void RailwayNetwork::connectStations(Station::StationID startId, Station::StationID endId,
+                                     int distance, int travelTime)
+{
     Station* start = findStationById(startId);
     Station* end = findStationById(endId);
-    
-    if (start && end) {
-        // We use distance as default weight, or travelTime if specified
-        network->addEdge(start, end, distance); 
+
+    if (start && end)
+    {
+        network->addEdge(start, end, distance);
     }
 }
 
-void RailwayNetwork::disconnectStations(Station::StationID startId, Station::StationID endId) {
+void RailwayNetwork::disconnectStations(Station::StationID startId, Station::StationID endId)
+{
     Station* start = findStationById(startId);
     Station* end = findStationById(endId);
-    if (start && end) {
+    if (start && end)
+    {
         network->removeEdge(start, end);
     }
 }
 
-void RailwayNetwork::findOptimalRoute(Station::StationID startId, Station::StationID endId, bool useTravelTime) {
+void RailwayNetwork::findOptimalRoute(Station::StationID startId, Station::StationID endId,
+                                      bool useTravelTime)
+{
     Station* start = findStationById(startId);
     Station* end = findStationById(endId);
-    if (start && end) {
+    if (start && end)
+    {
         network->findShortestPath(start, end);
     }
 }
 
-void RailwayNetwork::displayMap() const {
+void RailwayNetwork::displayMap() const
+{
     network->displayGraph();
 }

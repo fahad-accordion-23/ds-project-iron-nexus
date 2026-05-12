@@ -3,10 +3,6 @@
 
 #include "CircularDoublyLinkedList.hpp"
 
-/**
- * @brief Adjacency list based Graph for the railway network.
- * @tparam T The type of vertex data (e.g., Station name).
- */
 template <typename T>
 class Graph
 {
@@ -14,7 +10,7 @@ private:
     struct Edge
     {
         int destinationIndex;
-        int weight;  // Distance/time between stations
+        int weight;
     };
 
     struct Vertex
@@ -29,34 +25,16 @@ public:
     Graph();
     ~Graph();
 
-    /**
-     * @brief Add a new node (vertex) to the graph.
-     */
     void addNode(const T& data);
 
-    /**
-     * @brief Connect two nodes with an edge.
-     */
     void addEdge(const T& start, const T& end, int weight);
 
-    /**
-     * @brief Remove a node (vertex) and all incident edges.
-     */
     void removeNode(const T& data);
 
-    /**
-     * @brief Remove an edge between two nodes.
-     */
     void removeEdge(const T& start, const T& end);
 
-    /**
-     * @brief Find the shortest path between two nodes (Dijkstra's Algorithm).
-     */
     void findShortestPath(const T& start, const T& end);
 
-    /**
-     * @brief Display the entire graph.
-     */
     void displayGraph() const;
 };
 
@@ -125,7 +103,6 @@ void Graph<T>::removeNode(const T& data)
 
     if (removeIndex == -1) return;
 
-    // Remove edges pointing to this node in other vertices
     for (int i = 0; i < vertices.size(); i++)
     {
         if (i == removeIndex) continue;
@@ -136,11 +113,11 @@ void Graph<T>::removeNode(const T& data)
             if (adjList.getAt(j).destinationIndex == removeIndex)
             {
                 adjList.removeAt(j);
-                j--;  // adjust after removal
+                j--;
             }
             else if (adjList.getAt(j).destinationIndex > removeIndex)
             {
-                adjList.getAt(j).destinationIndex--;  // adjust index shift
+                adjList.getAt(j).destinationIndex--;
             }
         }
     }
@@ -227,7 +204,7 @@ void Graph<T>::findShortestPath(const T& start, const T& end)
             }
         }
 
-        if (u == -1 || distances[u] == INT_MAX) break;  // unreachable
+        if (u == -1 || distances[u] == INT_MAX) break;
 
         visited[u] = true;
 
@@ -253,8 +230,6 @@ void Graph<T>::findShortestPath(const T& start, const T& end)
     {
         std::cout << "Shortest path distance: " << distances[endIndex] << "\n";
 
-        // Reconstruct the path using the previous[] array
-        // Count path length first
         int pathLen = 0;
         for (int at = endIndex; at != -1; at = previous[at]) pathLen++;
 
@@ -293,4 +268,4 @@ void Graph<T>::displayGraph() const
     }
 }
 
-#endif  // GRAPH_HPP
+#endif

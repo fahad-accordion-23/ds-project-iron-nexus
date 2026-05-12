@@ -3,10 +3,6 @@
 
 #include <stdexcept>
 
-/**
- * @brief Simple linked-list based Stack for history tracking or undo operations.
- * @tparam T The type of data stored.
- */
 template <typename T>
 class Stack
 {
@@ -28,29 +24,14 @@ public:
     Stack();
     ~Stack();
 
-    /**
-     * @brief Pushes an item onto the top of the stack.
-     */
     void push(const T& value);
 
-    /**
-     * @brief Removes and returns the top item.
-     */
     T pop();
 
-    /**
-     * @brief Returns the top item without removing it.
-     */
     T peek() const;
 
-    /**
-     * @brief Checks if the stack is empty.
-     */
     bool isEmpty() const;
 
-    /**
-     * @brief Returns the number of items in the stack.
-     */
     int size() const;
     void clear();
 };
@@ -121,4 +102,4 @@ void Stack<T>::clear()
     }
 }
 
-#endif  // STACK_HPP
+#endif

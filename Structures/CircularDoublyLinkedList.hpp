@@ -3,10 +3,6 @@
 
 #include <stdexcept>
 
-/**
- * @brief A custom Circular Doubly Linked List implementation for Coach management.
- * @tparam T The type of data stored in the nodes.
- */
 template <typename T>
 class CircularDoublyLinkedList
 {
@@ -29,59 +25,27 @@ public:
     CircularDoublyLinkedList();
     ~CircularDoublyLinkedList();
 
-    /**
-     * @brief Add an element to the front of the list.
-     */
     void addFront(const T& value);
 
-    /**
-     * @brief Add an element to the end of the list.
-     */
     void addEnd(const T& value);
 
-    /**
-     * @brief Insert an element at a specific 0-based index.
-     */
     void insertAt(const T& value, int index);
 
-    /**
-     * @brief Remove an element at a specific index.
-     */
     void removeAt(int index);
 
-    /**
-     * @brief Find an element based on a predicate.
-     * Accepts any callable: lambda, functor, or function pointer.
-     */
     template <typename Predicate>
     T find(Predicate predicate) const;
 
-    /**
-     * @brief Execute a callback for each element in the list.
-     * Accepts any callable: lambda, functor, or function pointer.
-     */
     template <typename Func>
     void forEach(Func callback) const;
 
-    /**
-     * @brief Reverse the entire list by swapping next/prev pointers.
-     */
     void reverse();
 
-    /**
-     * @brief Get the current number of elements.
-     */
     int size() const;
 
-    /**
-     * @brief Get element at specific index.
-     */
     T& getAt(int index);
     const T& getAt(int index) const;
 
-    /**
-     * @brief Check if the list is empty.
-     */
     bool isEmpty() const;
     void clear();
 };
@@ -247,10 +211,10 @@ void CircularDoublyLinkedList<T>::reverse()
         Node* temp = current->next;
         current->next = current->prev;
         current->prev = temp;
-        current = temp;  // advance using original next
+        current = temp;
     } while (current != head);
 
-    head = head->prev;  // After full traversal, the old tail (now new head) is head->prev
+    head = head->prev;
 }
 
 template <typename T>
@@ -304,4 +268,4 @@ void CircularDoublyLinkedList<T>::clear()
     }
 }
 
-#endif  // CIRCULAR_DOUBLY_LINKED_LIST_HPP
+#endif

@@ -26,7 +26,7 @@ void SchedulingService::decommissionRoute(Train::TrainID trainId)
 {
     try
     {
-        schedule->search(trainId);  // Check if exists
+        schedule->search(trainId);
         schedule->remove(trainId);
         std::cout << "[SchedulingService] Train " << trainId << " route cleared.\n";
     }

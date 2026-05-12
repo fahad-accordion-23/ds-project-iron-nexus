@@ -3,9 +3,6 @@
 
 #include <string>
 
-/**
- * @brief Represents a Station (Vertex) in the Railway Network.
- */
 class Station
 {
 public:
@@ -29,4 +26,4 @@ public:
     bool operator==(const Station& other) const;
 };
 
-#endif // STATION_HPP
+#endif

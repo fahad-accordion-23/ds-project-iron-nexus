@@ -2,12 +2,10 @@
 #define LOG_REPOSITORY_HPP
 
 #include <string>
+
 #include "../Operations/LogEntry.hpp"
 #include "../Structures/Stack.hpp"
 
-/**
- * @brief Stateless utility for system operation logs persistence.
- */
 class LogRepository
 {
 public:
@@ -15,4 +13,4 @@ public:
     static void loadFromFile(const std::string& filename, Stack<LogEntry*>* storage);
 };
 
-#endif // LOG_REPOSITORY_HPP
+#endif

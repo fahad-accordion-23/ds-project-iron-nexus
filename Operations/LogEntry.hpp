@@ -3,9 +3,6 @@
 
 #include <string>
 
-/**
- * @brief Represents a single event in the system's history.
- */
 class LogEntry
 {
 private:
@@ -21,10 +18,7 @@ public:
     std::string getTimestamp() const;
     std::string getMetadata() const;
 
-    /**
-     * @brief Formats the log entry for terminal display.
-     */
     std::string toString() const;
 };
 
-#endif  // LOG_ENTRY_HPP
+#endif
