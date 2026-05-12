@@ -12,7 +12,10 @@ class RailwayNetwork
 {
 private:
     Graph<Station*>* network;
+    CircularDoublyLinkedList<Station*>* stationList;
     static const int MAX_HUBS = 15;
+
+    Station* findStationById(Station::StationID id) const;
 
 public:
     RailwayNetwork();
