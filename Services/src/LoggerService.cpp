@@ -72,4 +72,3 @@ void LoggerService::loadData(const std::string& filename)
 {
     LogRepository::loadFromFile(filename, history);
 }
-

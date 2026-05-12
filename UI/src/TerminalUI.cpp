@@ -161,34 +161,334 @@ void TerminalUI::handleTrainMenu()
 
 void TerminalUI::handleCoachMenu()
 {
-    std::cout << "\n--- Coach Management ---\n";
-    std::cout << "1. Add Coach\n2. Remove Coach\n3. Reverse Train\n0. Back\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- [Module 2] Coach Management ---\n";
+        std::cout << "1. Add Coach\n";
+        std::cout << "2. Remove Coach\n";
+        std::cout << "3. Reverse Train\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                int trainId, capacity, position;
+                std::string name;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Coach Name: ";
+                std::cin.ignore();
+                std::getline(std::cin, name);
+                std::cout << "Enter Capacity: ";
+                std::cin >> capacity;
+                std::cout << "Enter Position (-1 for end, 0 for front): ";
+                std::cin >> position;
+
+                coachService->addCoach(trainId, name, capacity, position);
+                loggerService->logAction("COACH_ADD", "Train: " + std::to_string(trainId) + " Coach: " + name);
+                break;
+            }
+            case 2:
+            {
+                int trainId, coachId;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Coach ID to remove: ";
+                std::cin >> coachId;
+                coachService->removeCoach(trainId, coachId);
+                loggerService->logAction("COACH_REMOVE", "Train: " + std::to_string(trainId) + " Coach: " + std::to_string(coachId));
+                break;
+            }
+            case 3:
+            {
+                int trainId;
+                std::cout << "Enter Train ID to reverse: ";
+                std::cin >> trainId;
+                coachService->reverseTrain(trainId);
+                loggerService->logAction("TRAIN_REVERSE", "Train: " + std::to_string(trainId));
+                break;
+            }
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }
 
 void TerminalUI::handleNetworkMenu()
 {
-    std::cout << "\n--- Railway Network ---\n";
-    std::cout << "1. Add Station\n2. Add Track\n3. Find Shortest Path\n0. Back\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- [Module 3] Railway Network ---\n";
+        std::cout << "1. Add Station\n";
+        std::cout << "2. Add Track (Link Stations)\n";
+        std::cout << "3. Remove Station\n";
+        std::cout << "4. Remove Track\n";
+        std::cout << "5. Find Shortest Path\n";
+        std::cout << "6. Show Network Map\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                std::string name;
+                std::cout << "Enter Station Name: ";
+                std::cin.ignore();
+                std::getline(std::cin, name);
+                networkService->createStation(name);
+                loggerService->logAction("STATION_ADD", "Name: " + name);
+                break;
+            }
+            case 2:
+            {
+                int startId, endId, distance, time;
+                std::cout << "Enter Start Station ID: ";
+                std::cin >> startId;
+                std::cout << "Enter End Station ID: ";
+                std::cin >> endId;
+                std::cout << "Enter Distance (km): ";
+                std::cin >> distance;
+                std::cout << "Enter Travel Time (mins): ";
+                std::cin >> time;
+                networkService->linkStations(startId, endId, distance, time);
+                loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) + " To: " + std::to_string(endId));
+                break;
+            }
+            case 3:
+            {
+                int id;
+                std::cout << "Enter Station ID to remove: ";
+                std::cin >> id;
+                networkService->deleteStation(id);
+                loggerService->logAction("STATION_REMOVE", "ID: " + std::to_string(id));
+                break;
+            }
+            case 4:
+            {
+                int startId, endId;
+                std::cout << "Enter Start Station ID: ";
+                std::cin >> startId;
+                std::cout << "Enter End Station ID: ";
+                std::cin >> endId;
+                networkService->unlinkStations(startId, endId);
+                loggerService->logAction("TRACK_REMOVE", "From: " + std::to_string(startId) + " To: " + std::to_string(endId));
+                break;
+            }
+            case 5:
+            {
+                int startId, endId, opt;
+                std::cout << "Enter Start Station ID: ";
+                std::cin >> startId;
+                std::cout << "Enter End Station ID: ";
+                std::cin >> endId;
+                std::cout << "Optimize for (1) Distance or (2) Time? ";
+                std::cin >> opt;
+                networkService->suggestRoute(startId, endId, opt == 2);
+                loggerService->logAction("PATH_FIND", "From: " + std::to_string(startId) + " To: " + std::to_string(endId));
+                break;
+            }
+            case 6:
+                networkService->showNetwork();
+                break;
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }
 
 void TerminalUI::handleSeatingMenu()
 {
-    std::cout << "\n--- Seating Chart ---\n";
-    std::cout << "1. Book Seat\n2. Cancel Booking\n3. View Chart\n0. Back\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- [Module 4] Seating Chart ---\n";
+        std::cout << "1. Book Seat\n";
+        std::cout << "2. Cancel Booking\n";
+        std::cout << "3. Check Seat Status\n";
+        std::cout << "4. View Seating Chart\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                int trainId, seatNo;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Global Seat Number: ";
+                std::cin >> seatNo;
+                if (coachService->bookSeat(trainId, seatNo)) {
+                    loggerService->logAction("SEAT_BOOK", "Train: " + std::to_string(trainId) + " Seat: " + std::to_string(seatNo));
+                }
+                break;
+            }
+            case 2:
+            {
+                int trainId, seatNo;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Global Seat Number: ";
+                std::cin >> seatNo;
+                if (coachService->cancelBooking(trainId, seatNo)) {
+                    loggerService->logAction("SEAT_CANCEL", "Train: " + std::to_string(trainId) + " Seat: " + std::to_string(seatNo));
+                }
+                break;
+            }
+            case 3:
+            {
+                int trainId, seatNo;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Global Seat Number: ";
+                std::cin >> seatNo;
+                SeatStatus status = coachService->checkSeatStatus(trainId, seatNo);
+                std::cout << "Seat Status: " << (status == SeatStatus::Available ? "Available" : "Booked") << "\n";
+                break;
+            }
+            case 4:
+            {
+                int trainId;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                coachService->viewSeatingChart(trainId);
+                break;
+            }
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }
 
 void TerminalUI::handleSchedulingMenu()
 {
-    std::cout << "\n--- Scheduling ---\n";
-    std::cout << "1. Assign Route\n2. Show Schedule\n0. Back\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- Scheduling (Operations) ---\n";
+        std::cout << "1. Assign Route\n";
+        std::cout << "2. Show Schedule\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                int trainId, startId, endId;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Start Station ID: ";
+                std::cin >> startId;
+                std::cout << "Enter Destination Station ID: ";
+                std::cin >> endId;
+                schedulingService->assignRoute(trainId, startId, endId);
+                loggerService->logAction("SCHEDULE_ASSIGN", "Train: " + std::to_string(trainId) + " to Route: " + std::to_string(startId) + "-" + std::to_string(endId));
+                break;
+            }
+            case 2:
+                schedulingService->showSchedule();
+                break;
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }
 
 void TerminalUI::handleLogsMenu()
 {
-    std::cout << "\n--- System Logs ---\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- [Module 5] System Logs ---\n";
+        std::cout << "1. Show Recent Logs\n";
+        std::cout << "2. Clear Logs\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                int count;
+                std::cout << "How many logs to show? ";
+                std::cin >> count;
+                loggerService->showRecentLogs(count);
+                break;
+            }
+            case 2:
+                loggerService->clearLogs();
+                break;
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }
 
 void TerminalUI::handlePersistenceMenu()
 {
-    std::cout << "\n--- Save/Load System ---\n";
+    bool back = false;
+    while (!back)
+    {
+        std::cout << "\n--- System Save/Load ---\n";
+        std::cout << "1. Save System State\n";
+        std::cout << "2. Load System State\n";
+        std::cout << "0. Back\n";
+        std::cout << "Choice: ";
+
+        int choice = getChoice();
+        switch (choice)
+        {
+            case 1:
+            {
+                trainService->saveData("trains.txt");
+                coachService->saveData("coaches.txt");
+                networkService->saveData("stations.txt");
+                schedulingService->saveData("schedule.txt");
+                loggerService->saveData("logs.txt");
+                std::cout << "System state saved successfully.\n";
+                break;
+            }
+            case 2:
+            {
+                trainService->loadData("trains.txt");
+                coachService->loadData("coaches.txt");
+                networkService->loadData("stations.txt");
+                schedulingService->loadData("schedule.txt");
+                loggerService->loadData("logs.txt");
+                std::cout << "System state loaded successfully.\n";
+                break;
+            }
+            case 0:
+                back = true;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
 }

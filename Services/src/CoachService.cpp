@@ -158,3 +158,14 @@ void CoachService::viewSeatingChart(Train::TrainID trainId) const
         });
     std::cout << "================================================\n";
 }
+
+void CoachService::saveData(const std::string& filename) const
+{
+    CoachRepository::saveToFile(filename, coachRegistry);
+}
+
+void CoachService::loadData(const std::string& filename)
+{
+    CoachRepository::loadFromFile(filename, coachRegistry);
+}
+
