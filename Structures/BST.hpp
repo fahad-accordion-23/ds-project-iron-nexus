@@ -64,4 +64,126 @@ public:
     bool isEmpty() const;
 };
 
+#include <stdexcept>
+
+template<typename K, typename V>
+BST<K, V>::BST() : root(nullptr) {}
+
+template<typename K, typename V>
+BST<K, V>::~BST() {
+    clear();
+}
+
+template<typename K, typename V>
+typename BST<K, V>::Node* BST<K, V>::insert(Node* node, K key, V value) {
+    if (node == nullptr) {
+        return new Node(key, value);
+    }
+    if (key < node->key) {
+        node->left = insert(node->left, key, value);
+    } else if (key > node->key) {
+        node->right = insert(node->right, key, value);
+    } else {
+        node->value = value; // Update value if key exists
+    }
+    return node;
+}
+
+template<typename K, typename V>
+void BST<K, V>::insert(K key, V value) {
+    root = insert(root, key, value);
+}
+
+template<typename K, typename V>
+typename BST<K, V>::Node* BST<K, V>::remove(Node* node, K key) {
+    if (node == nullptr) return nullptr;
+
+    if (key < node->key) {
+        node->left = remove(node->left, key);
+    } else if (key > node->key) {
+        node->right = remove(node->right, key);
+    } else {
+        // Node to be deleted found
+        if (node->left == nullptr) {
+            Node* temp = node->right;
+            delete node;
+            return temp;
+        } else if (node->right == nullptr) {
+            Node* temp = node->left;
+            delete node;
+            return temp;
+        }
+
+        // Node with two children: Get inorder successor
+        Node* temp = node->right;
+        while (temp && temp->left != nullptr) {
+            temp = temp->left;
+        }
+        node->key = temp->key;
+        node->value = temp->value;
+        node->right = remove(node->right, temp->key);
+    }
+    return node;
+}
+
+template<typename K, typename V>
+void BST<K, V>::remove(K key) {
+    root = remove(root, key);
+}
+
+template<typename K, typename V>
+typename BST<K, V>::Node* BST<K, V>::find(Node* node, K key) const {
+    if (node == nullptr || node->key == key) {
+        return node;
+    }
+    if (node->key < key) {
+        return find(node->right, key);
+    }
+    return find(node->left, key);
+}
+
+template<typename K, typename V>
+V BST<K, V>::search(K key) const {
+    Node* result = find(root, key);
+    if (result == nullptr) {
+        throw std::runtime_error("Key not found in BST");
+    }
+    return result->value;
+}
+
+template<typename K, typename V>
+void BST<K, V>::inOrder(Node* node, void (*callback)(K, V)) const {
+    if (node != nullptr) {
+        inOrder(node->left, callback);
+        callback(node->key, node->value);
+        inOrder(node->right, callback);
+    }
+}
+
+template<typename K, typename V>
+void BST<K, V>::traverseInOrder(void (*callback)(K, V)) const {
+    inOrder(root, callback);
+}
+
+template<typename K, typename V>
+void BST<K, V>::clear(Node* node) {
+    if (node != nullptr) {
+        clear(node->left);
+        clear(node->right);
+        delete node;
+    }
+}
+
+template<typename K, typename V>
+void BST<K, V>::clear() {
+    clear(root);
+    root = nullptr;
+}
+
+template<typename K, typename V>
+bool BST<K, V>::isEmpty() const {
+    return root == nullptr;
+}
+
 #endif // BST_HPP
+

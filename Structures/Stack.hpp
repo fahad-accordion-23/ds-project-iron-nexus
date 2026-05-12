@@ -1,11 +1,13 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
+#include <stdexcept>
+
 /**
  * @brief Simple linked-list based Stack for history tracking or undo operations.
  * @tparam T The type of data stored.
  */
-template<typename T>
+template <typename T>
 class Stack
 {
 private:
@@ -14,7 +16,9 @@ private:
         T data;
         Node* next;
 
-        Node(const T& value) : data(value), next(nullptr) {}
+        Node(const T& value) : data(value), next(nullptr)
+        {
+        }
     };
 
     Node* top;
@@ -48,6 +52,73 @@ public:
      * @brief Returns the number of items in the stack.
      */
     int size() const;
+    void clear();
 };
 
-#endif // STACK_HPP
+template <typename T>
+Stack<T>::Stack() : top(nullptr), count(0)
+{
+}
+
+template <typename T>
+Stack<T>::~Stack()
+{
+    clear();
+}
+
+template <typename T>
+void Stack<T>::push(const T& value)
+{
+    Node* newNode = new Node(value);
+    newNode->next = top;
+    top = newNode;
+    count++;
+}
+
+template <typename T>
+T Stack<T>::pop()
+{
+    if (isEmpty())
+    {
+        throw std::runtime_error("Stack is empty");
+    }
+    Node* temp = top;
+    T poppedValue = temp->data;
+    top = top->next;
+    delete temp;
+    count--;
+    return poppedValue;
+}
+
+template <typename T>
+T Stack<T>::peek() const
+{
+    if (isEmpty())
+    {
+        throw std::runtime_error("Stack is empty");
+    }
+    return top->data;
+}
+
+template <typename T>
+bool Stack<T>::isEmpty() const
+{
+    return count == 0;
+}
+
+template <typename T>
+int Stack<T>::size() const
+{
+    return count;
+}
+
+template <typename T>
+void Stack<T>::clear()
+{
+    while (!isEmpty())
+    {
+        pop();
+    }
+}
+
+#endif  // STACK_HPP
