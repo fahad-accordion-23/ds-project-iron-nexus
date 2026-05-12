@@ -21,7 +21,7 @@ sequenceDiagram
     S-->>NS: Station* (with auto-ID)
     NS->>AVL: insert(StationID, Station*)
     NS->>RN: addStation(Station*)
-    RN->>G: addStation(Station*)
+    RN->>G: addNode(Station*)
     NS-->>Operator: confirmation (StationID)
 ```
 
@@ -43,7 +43,7 @@ sequenceDiagram
     AVL-->>NS: Station*
     alt Station Found
         NS->>RN: removeStation(id)
-        RN->>G: removeVertex(id)
+        RN->>G: removeNode(id)
         NS->>AVL: remove(id)
         NS-->>Operator: station deleted
     else Not Found
@@ -83,7 +83,7 @@ sequenceDiagram
 
     Planner->>NS: suggestRoute(startId, endId, fastTrack)
     NS->>RN: findOptimalRoute(startId, endId, fastTrack)
-    RN->>G: findShortestRoute(startId, endId)
+    RN->>G: findShortestPath(startId, endId)
     Note over G: Dijkstra's Algorithm execution
     G-->>RN: Path Result
     RN-->>NS: Formatted Route
@@ -104,6 +104,6 @@ sequenceDiagram
 
     Operator->>NS: showNetwork()
     NS->>RN: displayMap()
-    RN->>G: displayNetwork()
+    RN->>G: displayGraph()
     G-->>Operator: Console output (Map)
 ```

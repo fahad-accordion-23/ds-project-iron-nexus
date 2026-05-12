@@ -30,34 +30,34 @@ public:
     ~Graph();
 
     /**
-     * @brief Add a new station (vertex) to the network.
+     * @brief Add a new node (vertex) to the graph.
      */
-    void addStation(const T& station);
+    void addNode(const T& data);
 
     /**
-     * @brief Connect two stations with a track (bi-directional edge).
+     * @brief Connect two nodes with an edge.
      */
-    void addTrack(const T& start, const T& end, int distance);
+    void addEdge(const T& start, const T& end, int weight);
 
     /**
-     * @brief Remove a station (vertex) and all incident tracks.
+     * @brief Remove a node (vertex) and all incident edges.
      */
-    void removeStation(const T& station);
+    void removeNode(const T& data);
 
     /**
-     * @brief Remove a track (edge) between two stations.
+     * @brief Remove an edge between two nodes.
      */
-    void removeTrack(const T& start, const T& end);
+    void removeEdge(const T& start, const T& end);
 
     /**
-     * @brief Find the shortest path between two stations (Dijkstra's Algorithm).
+     * @brief Find the shortest path between two nodes (Dijkstra's Algorithm).
      */
-    void findShortestRoute(const T& start, const T& end);
+    void findShortestPath(const T& start, const T& end);
 
     /**
-     * @brief Display the entire network.
+     * @brief Display the entire graph.
      */
-    void displayNetwork() const;
+    void displayGraph() const;
 };
 
 #endif  // GRAPH_HPP
