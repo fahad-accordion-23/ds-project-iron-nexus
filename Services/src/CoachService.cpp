@@ -15,37 +15,33 @@ CoachService::~CoachService()
     delete coachRegistry;
 }
 
-void CoachService::addCoach(Train::TrainID trainId, const std::string& coachName, int capacity,
-                            int index)
+void CoachService::createCoach(const std::string& coachName, int capacity)
 {
-    Train* train = trainService->findTrain(trainId);
-    if (!train)
-    {
-        std::cout << "[CoachService] Error: Train ID " << trainId << " not found.\n";
-        return;
-    }
-
     Coach* coach = Coach::Register(coachName, capacity);
     coachRegistry->insert(coach->getId(), coach);
-
-    if (index == 0)
-    {
-        train->addCoachFront(coach);
-    }
-    else if (index == -1)
-    {
-        train->addCoachEnd(coach);
-    }
-    else
-    {
-        train->insertCoach(coach, index);
-    }
-
-    std::cout << "[CoachService] Coach '" << coachName << "' (ID: " << coach->getId()
-              << ", Capacity: " << capacity << ") added to Train " << trainId << "\n";
+    std::cout << "[CoachService] Standalone Coach '" << coachName
+              << "' created with ID: " << coach->getId() << " and Capacity: " << capacity << ".\n";
 }
 
-void CoachService::removeCoach(Train::TrainID trainId, Coach::CoachID coachId)
+void CoachService::deleteCoach(Coach::CoachID coachId)
+{
+    try
+    {
+        Coach* coach = coachRegistry->search(coachId);
+        // Note: A robust system should unlink it from any train first.
+        // For now we assume it's standalone or handled properly.
+        coachRegistry->remove(coachId);
+        std::cout << "[CoachService] Coach '" << coach->getName() << "' (ID: " << coachId
+                  << ") deleted.\n";
+        delete coach;
+    }
+    catch (...)
+    {
+        std::cout << "[CoachService] Error: Coach ID " << coachId << " not found.\n";
+    }
+}
+
+void CoachService::linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int index)
 {
     Train* train = trainService->findTrain(trainId);
     if (!train)
@@ -54,7 +50,39 @@ void CoachService::removeCoach(Train::TrainID trainId, Coach::CoachID coachId)
         return;
     }
 
-    // Find the coach position in the train's list
+    try
+    {
+        Coach* coach = coachRegistry->search(coachId);
+        if (index == 0)
+        {
+            train->addCoachFront(coach);
+        }
+        else if (index == -1)
+        {
+            train->addCoachEnd(coach);
+        }
+        else
+        {
+            train->insertCoach(coach, index);
+        }
+        std::cout << "[CoachService] Coach '" << coach->getName() << "' (ID: " << coach->getId()
+                  << ") linked to Train " << trainId << ".\n";
+    }
+    catch (...)
+    {
+        std::cout << "[CoachService] Error: Coach ID " << coachId << " not found.\n";
+    }
+}
+
+void CoachService::unlinkCoach(Coach::CoachID coachId, Train::TrainID trainId)
+{
+    Train* train = trainService->findTrain(trainId);
+    if (!train)
+    {
+        std::cout << "[CoachService] Error: Train ID " << trainId << " not found.\n";
+        return;
+    }
+
     auto* coaches = train->getCoaches();
     int position = -1;
     for (int i = 0; i < coaches->size(); i++)
@@ -76,10 +104,36 @@ void CoachService::removeCoach(Train::TrainID trainId, Coach::CoachID coachId)
     Coach* removed = train->removeCoach(position);
     if (removed)
     {
-        coachRegistry->remove(coachId);
-        std::cout << "[CoachService] Coach '" << removed->getName() << "' removed from Train "
-                  << trainId << "\n";
+        std::cout << "[CoachService] Coach '" << removed->getName() << "' unlinked from Train "
+                  << trainId << ".\n";
     }
+}
+
+void CoachService::listAllCoaches() const
+{
+    std::cout << "\n========== COACH REGISTRY ==========\n";
+    if (!coachRegistry)
+    {
+        std::cout << "  (No coaches registered)\n";
+    }
+    else
+    {
+        int total = 0;
+        coachRegistry->traverseInOrder(
+            [&total](Coach::CoachID id, Coach* coach)
+            {
+                std::cout << "  [" << id << "] " << coach->getName()
+                          << " (Capacity: " << coach->getCapacity() << ")\n";
+                total++;
+            });
+
+        if (total == 0)
+        {
+            std::cout << "  (No coaches registered)\n";
+        }
+        std::cout << "  Total: " << total << " coach(es)\n";
+    }
+    std::cout << "====================================\n";
 }
 
 void CoachService::reverseTrain(Train::TrainID trainId)
@@ -168,4 +222,3 @@ void CoachService::loadData(const std::string& filename)
 {
     CoachRepository::loadFromFile(filename, coachRegistry);
 }
-

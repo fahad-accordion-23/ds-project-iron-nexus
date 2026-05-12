@@ -28,15 +28,29 @@ public:
     ~CoachService();
 
     /**
-     * @brief Add a new coach to a train. Integrates with Train's global seat pool.
+     * @brief Create a standalone coach.
      */
-    void addCoach(Train::TrainID trainId, const std::string& coachName, int capacity,
-                  int index = -1);
+    void createCoach(const std::string& coachName, int capacity);
 
     /**
-     * @brief Remove a coach. Prunes the Train's global logical seat size.
+     * @brief Permanently delete a coach from the registry.
      */
-    void removeCoach(Train::TrainID trainId, Coach::CoachID coachId);
+    void deleteCoach(Coach::CoachID coachId);
+
+    /**
+     * @brief Link an existing coach to a train. Integrates with Train's global seat pool.
+     */
+    void linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int index = -1);
+
+    /**
+     * @brief Unlink a coach from a train. Prunes the Train's global logical seat size.
+     */
+    void unlinkCoach(Coach::CoachID coachId, Train::TrainID trainId);
+
+    /**
+     * @brief View all coaches in the system.
+     */
+    void listAllCoaches() const;
 
     /**
      * @brief Reverse a train's orientation.

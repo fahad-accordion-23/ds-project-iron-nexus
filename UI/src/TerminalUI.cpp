@@ -165,9 +165,12 @@ void TerminalUI::handleCoachMenu()
     while (!back)
     {
         std::cout << "\n--- [Module 2] Coach Management ---\n";
-        std::cout << "1. Add Coach\n";
-        std::cout << "2. Remove Coach\n";
-        std::cout << "3. Reverse Train\n";
+        std::cout << "1. Create Standalone Coach\n";
+        std::cout << "2. Delete Coach\n";
+        std::cout << "3. Link Coach to Train\n";
+        std::cout << "4. Unlink Coach from Train\n";
+        std::cout << "5. Reverse Train\n";
+        std::cout << "6. List All Coaches\n";
         std::cout << "0. Back\n";
         std::cout << "Choice: ";
 
@@ -176,34 +179,55 @@ void TerminalUI::handleCoachMenu()
         {
             case 1:
             {
-                int trainId, capacity, position;
+                int capacity;
                 std::string name;
-                std::cout << "Enter Train ID: ";
-                std::cin >> trainId;
                 std::cout << "Enter Coach Name: ";
                 std::cin.ignore();
                 std::getline(std::cin, name);
                 std::cout << "Enter Capacity: ";
                 std::cin >> capacity;
-                std::cout << "Enter Position (-1 for end, 0 for front): ";
-                std::cin >> position;
 
-                coachService->addCoach(trainId, name, capacity, position);
-                loggerService->logAction("COACH_ADD", "Train: " + std::to_string(trainId) + " Coach: " + name);
+                coachService->createCoach(name, capacity);
+                loggerService->logAction("COACH_CREATE", "Coach: " + name);
                 break;
             }
             case 2:
             {
-                int trainId, coachId;
-                std::cout << "Enter Train ID: ";
-                std::cin >> trainId;
-                std::cout << "Enter Coach ID to remove: ";
+                int coachId;
+                std::cout << "Enter Coach ID to delete: ";
                 std::cin >> coachId;
-                coachService->removeCoach(trainId, coachId);
-                loggerService->logAction("COACH_REMOVE", "Train: " + std::to_string(trainId) + " Coach: " + std::to_string(coachId));
+                coachService->deleteCoach(coachId);
+                loggerService->logAction("COACH_DELETE", "Coach ID: " + std::to_string(coachId));
                 break;
             }
             case 3:
+            {
+                int trainId, coachId, position;
+                std::cout << "Enter Coach ID: ";
+                std::cin >> coachId;
+                std::cout << "Enter Train ID: ";
+                std::cin >> trainId;
+                std::cout << "Enter Position (-1 for end, 0 for front): ";
+                std::cin >> position;
+                coachService->linkCoach(coachId, trainId, position);
+                loggerService->logAction("COACH_LINK", "Coach ID: " + std::to_string(coachId) +
+                                                           " to Train: " + std::to_string(trainId));
+                break;
+            }
+            case 4:
+            {
+                int trainId, coachId;
+                std::cout << "Enter Coach ID: ";
+                std::cin >> coachId;
+                std::cout << "Enter Train ID to unlink from: ";
+                std::cin >> trainId;
+                coachService->unlinkCoach(coachId, trainId);
+                loggerService->logAction("COACH_UNLINK",
+                                         "Coach ID: " + std::to_string(coachId) +
+                                             " from Train: " + std::to_string(trainId));
+                break;
+            }
+            case 5:
             {
                 int trainId;
                 std::cout << "Enter Train ID to reverse: ";
@@ -212,6 +236,9 @@ void TerminalUI::handleCoachMenu()
                 loggerService->logAction("TRAIN_REVERSE", "Train: " + std::to_string(trainId));
                 break;
             }
+            case 6:
+                coachService->listAllCoaches();
+                break;
             case 0:
                 back = true;
                 break;
@@ -261,7 +288,8 @@ void TerminalUI::handleNetworkMenu()
                 std::cout << "Enter Travel Time (mins): ";
                 std::cin >> time;
                 networkService->linkStations(startId, endId, distance, time);
-                loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) + " To: " + std::to_string(endId));
+                loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) +
+                                                          " To: " + std::to_string(endId));
                 break;
             }
             case 3:
@@ -281,7 +309,8 @@ void TerminalUI::handleNetworkMenu()
                 std::cout << "Enter End Station ID: ";
                 std::cin >> endId;
                 networkService->unlinkStations(startId, endId);
-                loggerService->logAction("TRACK_REMOVE", "From: " + std::to_string(startId) + " To: " + std::to_string(endId));
+                loggerService->logAction("TRACK_REMOVE", "From: " + std::to_string(startId) +
+                                                             " To: " + std::to_string(endId));
                 break;
             }
             case 5:
@@ -294,7 +323,8 @@ void TerminalUI::handleNetworkMenu()
                 std::cout << "Optimize for (1) Distance or (2) Time? ";
                 std::cin >> opt;
                 networkService->suggestRoute(startId, endId, opt == 2);
-                loggerService->logAction("PATH_FIND", "From: " + std::to_string(startId) + " To: " + std::to_string(endId));
+                loggerService->logAction("PATH_FIND", "From: " + std::to_string(startId) +
+                                                          " To: " + std::to_string(endId));
                 break;
             }
             case 6:
@@ -332,8 +362,10 @@ void TerminalUI::handleSeatingMenu()
                 std::cin >> trainId;
                 std::cout << "Enter Global Seat Number: ";
                 std::cin >> seatNo;
-                if (coachService->bookSeat(trainId, seatNo)) {
-                    loggerService->logAction("SEAT_BOOK", "Train: " + std::to_string(trainId) + " Seat: " + std::to_string(seatNo));
+                if (coachService->bookSeat(trainId, seatNo))
+                {
+                    loggerService->logAction("SEAT_BOOK", "Train: " + std::to_string(trainId) +
+                                                              " Seat: " + std::to_string(seatNo));
                 }
                 break;
             }
@@ -344,8 +376,10 @@ void TerminalUI::handleSeatingMenu()
                 std::cin >> trainId;
                 std::cout << "Enter Global Seat Number: ";
                 std::cin >> seatNo;
-                if (coachService->cancelBooking(trainId, seatNo)) {
-                    loggerService->logAction("SEAT_CANCEL", "Train: " + std::to_string(trainId) + " Seat: " + std::to_string(seatNo));
+                if (coachService->cancelBooking(trainId, seatNo))
+                {
+                    loggerService->logAction("SEAT_CANCEL", "Train: " + std::to_string(trainId) +
+                                                                " Seat: " + std::to_string(seatNo));
                 }
                 break;
             }
@@ -357,7 +391,8 @@ void TerminalUI::handleSeatingMenu()
                 std::cout << "Enter Global Seat Number: ";
                 std::cin >> seatNo;
                 SeatStatus status = coachService->checkSeatStatus(trainId, seatNo);
-                std::cout << "Seat Status: " << (status == SeatStatus::Available ? "Available" : "Booked") << "\n";
+                std::cout << "Seat Status: "
+                          << (status == SeatStatus::Available ? "Available" : "Booked") << "\n";
                 break;
             }
             case 4:
@@ -401,7 +436,9 @@ void TerminalUI::handleSchedulingMenu()
                 std::cout << "Enter Destination Station ID: ";
                 std::cin >> endId;
                 schedulingService->assignRoute(trainId, startId, endId);
-                loggerService->logAction("SCHEDULE_ASSIGN", "Train: " + std::to_string(trainId) + " to Route: " + std::to_string(startId) + "-" + std::to_string(endId));
+                loggerService->logAction("SCHEDULE_ASSIGN",
+                                         "Train: " + std::to_string(trainId) + " to Route: " +
+                                             std::to_string(startId) + "-" + std::to_string(endId));
                 break;
             }
             case 2:
