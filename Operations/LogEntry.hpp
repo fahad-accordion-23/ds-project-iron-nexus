@@ -2,7 +2,6 @@
 #define LOG_ENTRY_HPP
 
 #include <string>
-#include <ctime>
 
 /**
  * @brief Represents a single event in the system's history.
@@ -16,7 +15,7 @@ private:
 
 public:
     LogEntry(const std::string& action, const std::string& metadata = "");
-    
+
     std::string getAction() const;
     std::string getTimestamp() const;
     std::string getMetadata() const;
@@ -27,4 +26,4 @@ public:
     std::string toString() const;
 };
 
-#endif // LOG_ENTRY_HPP
+#endif  // LOG_ENTRY_HPP

@@ -58,6 +58,13 @@ public:
      */
     void rehash();
 
+    /**
+     * @brief Execute a callback for each entry in the table.
+     * Accepts any callable: lambda, functor, or function pointer.
+     */
+    template<typename Func>
+    void forEach(Func callback) const;
+
     int getSize() const;
     bool isEmpty() const;
     void clear();
@@ -198,6 +205,21 @@ template <typename K, typename V>
 int HashTable<K, V>::getSize() const
 {
     return size;
+}
+
+template <typename K, typename V>
+template <typename Func>
+void HashTable<K, V>::forEach(Func callback) const
+{
+    for (int i = 0; i < capacity; ++i)
+    {
+        Entry* current = table[i];
+        while (current != nullptr)
+        {
+            callback(current->key, current->value);
+            current = current->next;
+        }
+    }
 }
 
 template <typename K, typename V>

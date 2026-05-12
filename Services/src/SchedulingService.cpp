@@ -1,34 +1,61 @@
 #include "../SchedulingService.hpp"
 
-SchedulingService::SchedulingService() : schedule(nullptr)
+#include <iostream>
+
+SchedulingService::SchedulingService()
 {
-    // schedule = new HashTable<Train::TrainID, Station::StationID>();
+    schedule = new HashTable<Train::TrainID, Station::StationID>();
 }
 
 SchedulingService::~SchedulingService()
 {
-    // delete schedule;
+    delete schedule;
 }
 
-void SchedulingService::assignRoute(Train::TrainID trainId, Station::StationID startId, Station::StationID endId)
+void SchedulingService::assignRoute(Train::TrainID trainId, Station::StationID startId,
+                                    Station::StationID endId)
 {
-    // 1. Verify trainId via TrainService
-    // 2. Calculate optimal route via NetworkService
-    // 3. Update schedule: schedule->insert(trainId, endId);
+    schedule->insert(trainId, endId);
+    std::cout << "[SchedulingService] Train " << trainId << " assigned route: Station " << startId
+              << " -> Station " << endId << "\n";
 }
 
 void SchedulingService::decommissionRoute(Train::TrainID trainId)
 {
-    // schedule->remove(trainId);
+    try
+    {
+        schedule->search(trainId);  // Check if exists
+        schedule->remove(trainId);
+        std::cout << "[SchedulingService] Train " << trainId << " route cleared.\n";
+    }
+    catch (...)
+    {
+        std::cout << "[SchedulingService] Error: No assignment for Train " << trainId << ".\n";
+    }
 }
 
 Station::StationID SchedulingService::getDestination(Train::TrainID trainId) const
 {
-    // return schedule->search(trainId);
-    return -1;
+    try
+    {
+        return schedule->search(trainId);
+    }
+    catch (...)
+    {
+        return -1;
+    }
 }
 
 void SchedulingService::showSchedule() const
 {
-    // Traverse schedule and display assignments
+    std::cout << "\n========== ACTIVE SCHEDULE ==========\n";
+    int count = 0;
+    schedule->forEach([&count](Train::TrainID trainId, Station::StationID stationId) {
+        std::cout << "  Train " << trainId << " -> Station " << stationId << "\n";
+        count++;
+    });
+    if (count == 0) {
+        std::cout << "  (No active routes)\n";
+    }
+    std::cout << "=====================================\n";
 }

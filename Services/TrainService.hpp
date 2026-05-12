@@ -2,8 +2,9 @@
 #define TRAIN_SERVICE_HPP
 
 #include <string>
-#include "../Train/Train.hpp"
+
 #include "../Structures/AVLTree.hpp"
+#include "../Train/Train.hpp"
 
 /**
  * @brief Application service for managing the Train Registry (Module 1).
@@ -45,4 +46,4 @@ public:
     void emergencyStop(Train::TrainID id);
 };
 
-#endif // TRAIN_SERVICE_HPP
+#endif  // TRAIN_SERVICE_HPP
