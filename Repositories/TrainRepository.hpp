@@ -19,7 +19,8 @@ public:
     void add(Train* train);
     void remove(Train::TrainID id);
     Train* find(Train::TrainID id) const;
-    void getAll(void (*callback)(Train::TrainID, Train*)) const;
+    template<typename Func>
+    void getAll(Func callback) const { storage->traverseInOrder(callback); }
     
     int getCount() const;
 

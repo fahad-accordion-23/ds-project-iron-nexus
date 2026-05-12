@@ -19,7 +19,8 @@ public:
     void add(Station* station);
     void remove(Station::StationID id);
     Station* find(Station::StationID id) const;
-    void getAll(void (*callback)(Station::StationID, Station*)) const;
+    template<typename Func>
+    void getAll(Func callback) const { storage->traverseInOrder(callback); }
     
     int getCount() const;
 

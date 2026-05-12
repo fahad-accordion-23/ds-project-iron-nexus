@@ -35,7 +35,6 @@ private:
     Node* insert(Node* node, K key, V value);
     Node* remove(Node* node, K key);
     Node* find(Node* node, K key) const;
-    void inOrder(Node* node, void (*callback)(K, V)) const;
 
 public:
     AVLTree();
@@ -44,7 +43,13 @@ public:
     void insert(K key, V value);
     void remove(K key);
     V search(K key) const;
-    void traverseInOrder(void (*callback)(K, V)) const;
+
+    /**
+     * @brief Perform an in-order traversal.
+     * Accepts any callable: lambda, functor, or function pointer.
+     */
+    template <typename Func>
+    void traverseInOrder(Func callback) const;
 
     bool isEmpty() const;
     void clear();
@@ -249,20 +254,22 @@ V AVLTree<K, V>::search(K key) const
 }
 
 template <typename K, typename V>
-void AVLTree<K, V>::inOrder(Node* node, void (*callback)(K, V)) const
+template <typename Func>
+void AVLTree<K, V>::traverseInOrder(Func callback) const
 {
-    if (node != nullptr)
+    struct InOrder
     {
-        inOrder(node->left, callback);
-        callback(node->key, node->value);
-        inOrder(node->right, callback);
-    }
-}
-
-template <typename K, typename V>
-void AVLTree<K, V>::traverseInOrder(void (*callback)(K, V)) const
-{
-    inOrder(root, callback);
+        static void traverse(Node* node, Func& cb)
+        {
+            if (node != nullptr)
+            {
+                traverse(node->left, cb);
+                cb(node->key, node->value);
+                traverse(node->right, cb);
+            }
+        }
+    };
+    InOrder::traverse(root, callback);
 }
 
 template <typename K, typename V>

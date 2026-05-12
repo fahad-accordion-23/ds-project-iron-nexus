@@ -1,6 +1,8 @@
 #ifndef CIRCULAR_DOUBLY_LINKED_LIST_HPP
 #define CIRCULAR_DOUBLY_LINKED_LIST_HPP
 
+#include <stdexcept>
+
 /**
  * @brief A custom Circular Doubly Linked List implementation for Coach management.
  * @tparam T The type of data stored in the nodes.
@@ -49,8 +51,17 @@ public:
 
     /**
      * @brief Find an element based on a predicate.
+     * Accepts any callable: lambda, functor, or function pointer.
      */
-    T find(bool (*predicate)(const T&)) const;
+    template <typename Predicate>
+    T find(Predicate predicate) const;
+
+    /**
+     * @brief Execute a callback for each element in the list.
+     * Accepts any callable: lambda, functor, or function pointer.
+     */
+    template <typename Func>
+    void forEach(Func callback) const;
 
     /**
      * @brief Reverse the entire list by swapping next/prev pointers.
@@ -74,8 +85,6 @@ public:
     bool isEmpty() const;
     void clear();
 };
-
-#include <stdexcept>
 
 template <typename T>
 CircularDoublyLinkedList<T>::CircularDoublyLinkedList() : head(nullptr), count(0)
@@ -195,7 +204,8 @@ void CircularDoublyLinkedList<T>::removeAt(int index)
 }
 
 template <typename T>
-T CircularDoublyLinkedList<T>::find(bool (*predicate)(const T&)) const
+template <typename Predicate>
+T CircularDoublyLinkedList<T>::find(Predicate predicate) const
 {
     if (isEmpty()) throw std::runtime_error("List is empty");
 
@@ -210,6 +220,20 @@ T CircularDoublyLinkedList<T>::find(bool (*predicate)(const T&)) const
     } while (current != head);
 
     throw std::runtime_error("Element not found");
+}
+
+template <typename T>
+template <typename Func>
+void CircularDoublyLinkedList<T>::forEach(Func callback) const
+{
+    if (isEmpty()) return;
+
+    Node* current = head;
+    do
+    {
+        callback(current->data);
+        current = current->next;
+    } while (current != head);
 }
 
 template <typename T>
@@ -241,7 +265,7 @@ bool CircularDoublyLinkedList<T>::isEmpty() const
     return count == 0;
 }
 
-template<typename T>
+template <typename T>
 T& CircularDoublyLinkedList<T>::getAt(int index)
 {
     if (isEmpty() || index < 0 || index >= count)
@@ -256,7 +280,7 @@ T& CircularDoublyLinkedList<T>::getAt(int index)
     return current->data;
 }
 
-template<typename T>
+template <typename T>
 const T& CircularDoublyLinkedList<T>::getAt(int index) const
 {
     if (isEmpty() || index < 0 || index >= count)
