@@ -54,7 +54,7 @@ void RailwayNetwork::removeStation(Station::StationID id)
 }
 
 void RailwayNetwork::connectStations(Station::StationID startId, Station::StationID endId,
-                                     int distance, int travelTime)
+                                     int distance)
 {
     Station* start = findStationById(startId);
     Station* end = findStationById(endId);
@@ -75,8 +75,7 @@ void RailwayNetwork::disconnectStations(Station::StationID startId, Station::Sta
     }
 }
 
-void RailwayNetwork::findOptimalRoute(Station::StationID startId, Station::StationID endId,
-                                      bool useTravelTime)
+void RailwayNetwork::findOptimalRoute(Station::StationID startId, Station::StationID endId)
 {
     Station* start = findStationById(startId);
     Station* end = findStationById(endId);

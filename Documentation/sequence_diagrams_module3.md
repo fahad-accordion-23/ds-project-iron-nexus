@@ -54,7 +54,7 @@ sequenceDiagram
 ---
 
 ## 3. Link Two Stations (Add Track)
-Establishing a connection between two hubs with specific distance and time metrics.
+Establishing a connection between two hubs with a distance metric.
 
 ```mermaid
 sequenceDiagram
@@ -63,16 +63,16 @@ sequenceDiagram
     participant RN as RailwayNetwork
     participant G as Graph
 
-    Operator->>NS: linkStations(startId, endId, distance, time)
-    NS->>RN: connectStations(startId, endId, distance, time)
-    RN->>G: addEdge(startId, endId, distance/time)
+    Operator->>NS: linkStations(startId, endId, distance)
+    NS->>RN: connectStations(startId, endId, distance)
+    RN->>G: addEdge(startId, endId, distance)
     NS-->>Operator: track established
 ```
 
 ---
 
 ## 4. Suggest Optimal Route (Dijkstra)
-Calculating the most efficient path based on either distance or travel time.
+Calculating the most efficient path by shortest distance.
 
 ```mermaid
 sequenceDiagram
@@ -81,8 +81,8 @@ sequenceDiagram
     participant RN as RailwayNetwork
     participant G as Graph
 
-    Planner->>NS: suggestRoute(startId, endId, fastTrack)
-    NS->>RN: findOptimalRoute(startId, endId, fastTrack)
+    Planner->>NS: suggestRoute(startId, endId)
+    NS->>RN: findOptimalRoute(startId, endId)
     RN->>G: findShortestPath(startId, endId)
     Note over G: Dijkstra's Algorithm execution
     G-->>RN: Path Result

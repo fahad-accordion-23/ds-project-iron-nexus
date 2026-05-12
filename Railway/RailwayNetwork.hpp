@@ -23,13 +23,11 @@ public:
 
     void removeStation(Station::StationID id);
 
-    void connectStations(Station::StationID startId, Station::StationID endId, int distance,
-                         int travelTime);
+    void connectStations(Station::StationID startId, Station::StationID endId, int distance);
 
     void disconnectStations(Station::StationID startId, Station::StationID endId);
 
-    void findOptimalRoute(Station::StationID startId, Station::StationID endId,
-                          bool useTravelTime = false);
+    void findOptimalRoute(Station::StationID startId, Station::StationID endId);
 
     void displayMap() const;
 };

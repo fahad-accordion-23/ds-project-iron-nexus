@@ -111,13 +111,13 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 networkService->unlinkStations(action->primaryId, action->secondaryId);
             else
                 networkService->linkStations(action->primaryId, action->secondaryId,
-                                             action->intData, action->intData2);
+                                             action->intData);
             break;
 
         case ActionType::UNLINK_STATIONS:
             if (isUndo)
                 networkService->linkStations(action->primaryId, action->secondaryId,
-                                             action->intData, action->intData2);
+                                             action->intData);
             else
                 networkService->unlinkStations(action->primaryId, action->secondaryId);
             break;

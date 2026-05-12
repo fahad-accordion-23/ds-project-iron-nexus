@@ -304,20 +304,18 @@ void TerminalUI::handleNetworkMenu()
             }
             case 2:
             {
-                int startId, endId, distance, time;
+                int startId, endId, distance;
                 std::cout << "Enter Start Station ID: ";
                 std::cin >> startId;
                 std::cout << "Enter End Station ID: ";
                 std::cin >> endId;
                 std::cout << "Enter Distance (km): ";
                 std::cin >> distance;
-                std::cout << "Enter Travel Time (mins): ";
-                std::cin >> time;
-                networkService->linkStations(startId, endId, distance, time);
+                networkService->linkStations(startId, endId, distance);
                 if (!undoService->isActive())
                 {
                     undoService->recordAction(ActionType::LINK_STATIONS, startId, endId, "",
-                                              distance, time);
+                                              distance);
                 }
                 loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) +
                                                           " To: " + std::to_string(endId));
@@ -346,14 +344,12 @@ void TerminalUI::handleNetworkMenu()
             }
             case 5:
             {
-                int startId, endId, opt;
+                int startId, endId;
                 std::cout << "Enter Start Station ID: ";
                 std::cin >> startId;
                 std::cout << "Enter End Station ID: ";
                 std::cin >> endId;
-                std::cout << "Optimize for (1) Distance or (2) Time? ";
-                std::cin >> opt;
-                networkService->suggestRoute(startId, endId, opt == 2);
+                networkService->suggestRoute(startId, endId);
                 loggerService->logAction("PATH_FIND", "From: " + std::to_string(startId) +
                                                           " To: " + std::to_string(endId));
                 break;

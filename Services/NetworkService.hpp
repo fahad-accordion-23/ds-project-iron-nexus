@@ -23,17 +23,14 @@ public:
 
     void deleteStation(Station::StationID id);
 
-    void linkStations(Station::StationID startId, Station::StationID endId, int distance, int time);
+    void linkStations(Station::StationID startId, Station::StationID endId, int distance);
 
     void unlinkStations(Station::StationID startId, Station::StationID endId);
-
-    void getShortestPath(Station::StationID startId, Station::StationID endId,
-                         bool optimizeForTime);
 
     void saveData(const std::string& filename) const;
     void loadData(const std::string& filename);
 
-    void suggestRoute(Station::StationID startId, Station::StationID endId, bool fastTrack = false);
+    void suggestRoute(Station::StationID startId, Station::StationID endId);
 
     void showNetwork() const;
 };

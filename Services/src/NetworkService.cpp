@@ -52,11 +52,11 @@ void NetworkService::deleteStation(Station::StationID id)
 }
 
 void NetworkService::linkStations(Station::StationID startId, Station::StationID endId,
-                                  int distance, int time)
+                                  int distance)
 {
-    network->connectStations(startId, endId, distance, time);
+    network->connectStations(startId, endId, distance);
     std::cout << "[NetworkService] Track established between stations " << startId << " and "
-              << endId << " (Distance: " << distance << "km, Time: " << time << "min)\n";
+              << endId << " (Distance: " << distance << "km)\n";
 }
 
 void NetworkService::unlinkStations(Station::StationID startId, Station::StationID endId)
@@ -66,12 +66,11 @@ void NetworkService::unlinkStations(Station::StationID startId, Station::Station
               << "\n";
 }
 
-void NetworkService::suggestRoute(Station::StationID startId, Station::StationID endId,
-                                  bool fastTrack)
+void NetworkService::suggestRoute(Station::StationID startId, Station::StationID endId)
 {
     std::cout << "\n========== ROUTE SUGGESTION ==========\n";
-    std::cout << "  Mode: " << (fastTrack ? "Fastest Time" : "Shortest Distance") << "\n";
-    network->findOptimalRoute(startId, endId, fastTrack);
+    std::cout << "  Mode: Shortest Distance\n";
+    network->findOptimalRoute(startId, endId);
     std::cout << "=======================================\n";
 }
 
