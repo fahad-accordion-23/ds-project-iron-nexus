@@ -32,19 +32,18 @@ void CoachService::rehydrateCoach(Coach::CoachID id, const std::string& name, in
 
 void CoachService::deleteCoach(Coach::CoachID coachId)
 {
-    try
-    {
-        Coach* coach = coachRegistry->search(coachId);
+    Coach* coach = coachRegistry->search(coachId);
 
-        coachRegistry->remove(coachId);
-        std::cout << "[CoachService] Coach '" << coach->getName() << "' (ID: " << coachId
-                  << ") deleted.\n";
-        delete coach;
-    }
-    catch (...)
+    if (coach->getIsAttached())
     {
-        std::cout << "[CoachService] Error: Coach ID " << coachId << " not found.\n";
+        std::cout << "[CoachService] Error: Cannot delete Coach " << coachId
+                  << ". It is currently attached to a train. Unlink it first.\n";
+        return;
     }
+
+    coachRegistry->remove(coachId);
+    std::cout << "[CoachService] Coach '" << coach->getName() << "' deleted.\n";
+    delete coach;
 }
 
 void CoachService::linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int index)
@@ -73,6 +72,8 @@ void CoachService::linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int
         }
         std::cout << "[CoachService] Coach '" << coach->getName() << "' (ID: " << coach->getId()
                   << ") linked to Train " << trainId << ".\n";
+
+        coach->setIsAttached(true);
     }
     catch (...)
     {
@@ -112,6 +113,8 @@ void CoachService::unlinkCoach(Coach::CoachID coachId, Train::TrainID trainId)
     {
         std::cout << "[CoachService] Coach '" << removed->getName() << "' unlinked from Train "
                   << trainId << ".\n";
+
+        removed->setIsAttached(false);
     }
 }
 

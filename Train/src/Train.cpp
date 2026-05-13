@@ -10,6 +10,34 @@ Train::Train(TrainID trainId, const std::string& trainName)
     seatTree = new BST<Seat::GlobalSeatNumber, Seat*>();
 }
 
+void Train::rebuildSeats()
+{
+    if (seatTree != nullptr && !seatTree->isEmpty())
+    {
+        seatTree->traverseInOrder([](Seat::GlobalSeatNumber, Seat* seat) { delete seat; });
+
+        seatTree->clear();
+        seatLookup->clear();
+    }
+
+    totalSeatCapacity = 0;
+    if (!coaches->isEmpty())
+    {
+        for (int i = 0; i < coaches->size(); i++)
+        {
+            totalSeatCapacity += coaches->getAt(i)->getCapacity();
+        }
+    }
+    currentSeatSize = totalSeatCapacity;
+
+    for (int i = 1; i <= totalSeatCapacity; i++)
+    {
+        Seat* s = new Seat(i);
+        seatLookup->insert(i, s);
+        seatTree->insert(i, s);
+    }
+}
+
 Train* Train::Register(const std::string& name)
 {
     return new Train(nextId++, name);
@@ -23,6 +51,11 @@ Train* Train::Rehydrate(TrainID id, const std::string& name)
 
 Train::~Train()
 {
+    if (seatTree != nullptr)
+    {
+        seatTree->traverseInOrder([](Seat::GlobalSeatNumber, Seat* seat) { delete seat; });
+    }
+
     delete coaches;
     delete seatLookup;
     delete seatTree;
@@ -49,44 +82,19 @@ CircularDoublyLinkedList<Coach*>* Train::getCoaches() const
 void Train::addCoachFront(Coach* coach)
 {
     coaches->addFront(coach);
-
-    int startNum = totalSeatCapacity + 1;
-    for (int i = 0; i < coach->getCapacity(); i++)
-    {
-        Seat* s = new Seat(startNum + i);
-        seatLookup->insert(s->getNumber(), s);
-        seatTree->insert(s->getNumber(), s);
-    }
-    totalSeatCapacity += coach->getCapacity();
-    currentSeatSize += coach->getCapacity();
+    rebuildSeats();
 }
 
 void Train::addCoachEnd(Coach* coach)
 {
     coaches->addEnd(coach);
-    int startNum = totalSeatCapacity + 1;
-    for (int i = 0; i < coach->getCapacity(); i++)
-    {
-        Seat* s = new Seat(startNum + i);
-        seatLookup->insert(s->getNumber(), s);
-        seatTree->insert(s->getNumber(), s);
-    }
-    totalSeatCapacity += coach->getCapacity();
-    currentSeatSize += coach->getCapacity();
+    rebuildSeats();
 }
 
 void Train::insertCoach(Coach* coach, int position)
 {
     coaches->insertAt(coach, position);
-    int startNum = totalSeatCapacity + 1;
-    for (int i = 0; i < coach->getCapacity(); i++)
-    {
-        Seat* s = new Seat(startNum + i);
-        seatLookup->insert(s->getNumber(), s);
-        seatTree->insert(s->getNumber(), s);
-    }
-    totalSeatCapacity += coach->getCapacity();
-    currentSeatSize += coach->getCapacity();
+    rebuildSeats();
 }
 
 Coach* Train::removeCoach(int position)
@@ -96,8 +104,7 @@ Coach* Train::removeCoach(int position)
     Coach* coach = coaches->getAt(position);
     coaches->removeAt(position);
 
-    totalSeatCapacity -= coach->getCapacity();
-    currentSeatSize -= coach->getCapacity();
+    rebuildSeats();
 
     return coach;
 }

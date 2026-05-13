@@ -14,6 +14,7 @@ private:
     const CoachID id;
     std::string name;
     int capacity;
+    bool isAttached;
 
     Coach(CoachID coachId, const std::string& coachName, int coachCapacity);
 
@@ -25,6 +26,8 @@ public:
     CoachID getId() const;
     std::string getName() const;
     int getCapacity() const;
+    bool getIsAttached() const;
+    void setIsAttached(bool attached);
 };
 
 #endif

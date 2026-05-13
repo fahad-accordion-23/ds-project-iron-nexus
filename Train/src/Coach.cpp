@@ -3,7 +3,7 @@
 Coach::CoachID Coach::nextId = 2000;
 
 Coach::Coach(CoachID coachId, const std::string& coachName, int coachCapacity)
-    : id(coachId), name(coachName), capacity(coachCapacity)
+    : id(coachId), name(coachName), capacity(coachCapacity), isAttached(false)
 {
 }
 
@@ -35,4 +35,14 @@ std::string Coach::getName() const
 int Coach::getCapacity() const
 {
     return capacity;
+}
+
+bool Coach::getIsAttached() const
+{
+    return isAttached;
+}
+
+void Coach::setIsAttached(bool attached)
+{
+    isAttached = attached;
 }

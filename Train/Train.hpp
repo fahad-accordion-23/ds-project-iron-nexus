@@ -31,6 +31,8 @@ private:
 
     Train(TrainID trainId, const std::string& trainName);
 
+    void rebuildSeats();
+
 public:
     static Train* Register(const std::string& name);
     static Train* Rehydrate(TrainID id, const std::string& name);
