@@ -1,6 +1,7 @@
 #include "../NetworkService.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 #include "../../Repositories/StationRepository.hpp"
 
@@ -20,8 +21,19 @@ NetworkService::~NetworkService()
 Station::StationID NetworkService::createStation(const std::string& name)
 {
     Station* station = Station::Register(name);
-    stationRegistry->insert(station->getId(), station);
-    network->addStation(station);
+
+    try
+    {
+        network->addStation(station);
+        stationRegistry->insert(station->getId(), station);
+    }
+    catch (std::runtime_error)
+    {
+        delete station;
+        std::cout << "[NetworkService] Error: Failed to create station '" << name << "'\n";
+        return -1;
+    }
+
     std::cout << "[NetworkService] Station '" << name << "' created with ID: " << station->getId()
               << "\n";
     return station->getId();
