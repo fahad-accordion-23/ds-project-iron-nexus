@@ -36,6 +36,8 @@ public:
 
     void reverseTrain(Train::TrainID trainId);
 
+    void traverseTrain(Train::TrainID trainId) const;
+
     bool bookSeat(Train::TrainID trainId, Seat::GlobalSeatNumber seatNumber);
     bool cancelBooking(Train::TrainID trainId, Seat::GlobalSeatNumber seatNumber);
 

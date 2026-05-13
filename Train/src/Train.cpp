@@ -81,19 +81,32 @@ CircularDoublyLinkedList<Coach*>* Train::getCoaches() const
 
 void Train::addCoachFront(Coach* coach)
 {
-    coaches->addFront(coach);
+    if (isReversed)
+        coaches->addEnd(coach);
+    else
+        coaches->addFront(coach);
     rebuildSeats();
 }
 
 void Train::addCoachEnd(Coach* coach)
 {
-    coaches->addEnd(coach);
+    if (isReversed)
+        coaches->addFront(coach);
+    else
+        coaches->addEnd(coach);
     rebuildSeats();
 }
 
 void Train::insertCoach(Coach* coach, int position)
 {
-    coaches->insertAt(coach, position);
+    if (isReversed)
+    {
+        coaches->insertAt(coach, coaches->size() - position);
+    }
+    else
+    {
+        coaches->insertAt(coach, position);
+    }
     rebuildSeats();
 }
 
@@ -101,18 +114,19 @@ Coach* Train::removeCoach(int position)
 {
     if (position < 0 || position >= coaches->size()) return nullptr;
 
-    Coach* coach = coaches->getAt(position);
-    coaches->removeAt(position);
+    // Calculate the physical index based on orientation
+    int actualPos = isReversed ? (coaches->size() - 1 - position) : position;
 
+    Coach* coach = coaches->getAt(actualPos);
+    coaches->removeAt(actualPos);
     rebuildSeats();
-
     return coach;
 }
 
 void Train::reverseOrientation()
 {
     isReversed = !isReversed;
-    coaches->reverse();
+    // Does not physically reverse the linked list.
 
     rebuildSeats();
 }
@@ -154,4 +168,14 @@ bool Train::releaseSeat(Seat::GlobalSeatNumber globalNumber)
 BST<Seat::GlobalSeatNumber, Seat*>* Train::getSeatingChart() const
 {
     return seatTree;
+}
+
+bool Train::getIsReversed() const
+{
+    return isReversed;
+}
+
+void Train::setIsReversed(bool reversed)
+{
+    isReversed = reversed;
 }

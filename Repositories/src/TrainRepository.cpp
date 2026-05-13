@@ -7,23 +7,25 @@ void TrainRepository::saveToFile(const std::string& filename,
                                  const AVLTree<Train::TrainID, Train*>* storage)
 {
     if (!storage) return;
-
     std::ofstream file(filename);
     if (!file.is_open()) return;
 
     storage->traverseInOrder(
         [&file](Train::TrainID id, Train* train)
         {
-            // 1. Save Train Base
-            file << "TRAIN," << id << "," << train->getName() << "\n";
+            // 1. SAVE FLAG: Append the isReversed flag to the end of the line
+            file << "TRAIN," << id << "," << train->getName() << ","
+                 << (train->getIsReversed() ? "1" : "0") << "\n";
 
-            // 2. Save Linkages (Which coaches are on this train)
+            // 2. SAVE LINKS IN LOGICAL ORDER
             auto coaches = train->getCoaches();
             if (coaches && !coaches->isEmpty())
             {
+                bool rev = train->getIsReversed();
                 for (int i = 0; i < coaches->size(); i++)
                 {
-                    file << "LINK," << id << "," << coaches->getAt(i)->getId() << "\n";
+                    int idx = rev ? (coaches->size() - 1 - i) : i;
+                    file << "LINK," << id << "," << coaches->getAt(idx)->getId() << "\n";
                 }
             }
 
@@ -62,12 +64,14 @@ void TrainRepository::loadFromFile(const std::string& filename,
 
         if (type == "TRAIN")
         {
-            std::string idStr, name;
+            std::string idStr, name, revStr;
             std::getline(ss, idStr, ',');
             std::getline(ss, name, ',');
+            std::getline(ss, revStr, ',');  // Grab the flag
             int id = std::stoi(idStr);
 
             Train* train = Train::Rehydrate(id, name);
+            if (revStr == "1") train->setIsReversed(true);  // Restore flag
             storage->insert(id, train);
         }
         else if (type == "LINK")

@@ -188,6 +188,7 @@ void TerminalUI::handleCoachMenu()
         std::cout << "4. Unlink Coach from Train\n";
         std::cout << "5. Reverse Train\n";
         std::cout << "6. List All Coaches\n";
+        std::cout << "7. Traverse Train (View Linked Coaches)\n";  // <--- ADDED
         std::cout << "0. Back\n";
         std::cout << "Choice: ";
 
@@ -196,13 +197,24 @@ void TerminalUI::handleCoachMenu()
         {
             case 1:
             {
-                int capacity;
+                int capacity = 0;  // Initialize to 0 to trigger the while loop
                 std::string name;
                 std::cout << "Enter Coach Name: ";
                 std::cin.ignore();
                 std::getline(std::cin, name);
-                std::cout << "Enter Capacity: ";
-                std::cin >> capacity;
+
+                // --- THE FIX: Input Validation Loop ---
+                while (capacity <= 0)
+                {
+                    std::cout << "Enter Capacity (must be > 0): ";
+                    std::cin >> capacity;
+
+                    if (capacity <= 0)
+                    {
+                        std::cout << "Invalid capacity! Please try again.\n";
+                    }
+                }
+                // --------------------------------------
 
                 int coachId = coachService->createCoach(name, capacity);
                 if (!undoService->isActive())
@@ -261,6 +273,15 @@ void TerminalUI::handleCoachMenu()
             case 6:
                 coachService->listAllCoaches();
                 break;
+            case 7:
+            {
+                int trainId;
+                std::cout << "Enter Train ID to traverse: ";
+                std::cin >> trainId;
+                coachService->traverseTrain(trainId);
+                loggerService->logAction("TRAIN_TRAVERSE", "Train: " + std::to_string(trainId));
+                break;
+            }
             case 0:
                 back = true;
                 break;
@@ -530,46 +551,29 @@ void TerminalUI::handlePersistenceMenu()
         {
             case 1:
             {
-                int capacity = 0;  // Initialize to 0 to trigger the while loop
-                std::string name;
-                std::cout << "Enter Coach Name: ";
-                std::cin.ignore();
-                std::getline(std::cin, name);
+                coachService->saveData("coaches.txt");
+                trainService->saveData("trains.txt");
+                networkService->saveData("stations.txt");
+                schedulingService->saveData("schedule.txt");
+                loggerService->saveData("logs.txt");
+                std::cout << "System state saved successfully.\n";
 
-                // --- THE FIX: Input Validation Loop ---
-                while (capacity <= 0)
-                {
-                    std::cout << "Enter Capacity (must be > 0): ";
-                    std::cin >> capacity;
-
-                    if (capacity <= 0)
-                    {
-                        std::cout << "Invalid capacity! Please try again.\n";
-                    }
-                }
-                // --------------------------------------
-
-                int coachId = coachService->createCoach(name, capacity);
-                if (!undoService->isActive())
-                {
-                    undoService->recordAction(ActionType::CREATE_COACH, coachId, -1, name,
-                                              capacity);
-                }
-                loggerService->logAction("COACH_CREATE", "Coach: " + name);
                 break;
             }
             case 2:
             {
                 coachService->loadData("coaches.txt");
-                trainService->loadData("trains.txt");
+                trainService->loadData("trains.txt", coachService->getCoachRegistry());
                 networkService->loadData("stations.txt");
                 schedulingService->loadData("schedule.txt");
                 loggerService->loadData("logs.txt");
                 std::cout << "System state loaded successfully.\n";
+
                 break;
             }
             case 0:
                 back = true;
+
                 break;
             default:
                 std::cout << "Invalid choice!\n";

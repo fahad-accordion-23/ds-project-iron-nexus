@@ -43,14 +43,19 @@ void UndoService::recordAction(ActionType type, int primaryId, int secondaryId,
         Train* train = trainService->findTrain(primaryId);
         if (train)
         {
-            // 1. Snapshot the Coach sequence
+            // Save the reverse state into intData2
+            action->intData2 = train->getIsReversed() ? 1 : 0;
+
+            // Save logical coach IDs
             action->savedCoachIds = new CircularDoublyLinkedList<int>();
             auto coaches = train->getCoaches();
             if (coaches && !coaches->isEmpty())
             {
+                bool rev = train->getIsReversed();
                 for (int i = 0; i < coaches->size(); ++i)
                 {
-                    action->savedCoachIds->addEnd(coaches->getAt(i)->getId());
+                    int idx = rev ? (coaches->size() - 1 - i) : i;
+                    action->savedCoachIds->addEnd(coaches->getAt(idx)->getId());
                 }
             }
 
@@ -97,18 +102,11 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
         case ActionType::REMOVE_TRAIN:
             if (isUndo)
             {
-                // 1. Recreate the base train shell
                 trainService->rehydrateTrain(action->primaryId, action->stringData);
 
-                // 2. Re-attach the exact coaches in the correct order
-                if (action->savedCoachIds)
-                {
-                    for (int i = 0; i < action->savedCoachIds->size(); i++)
-                    {
-                        coachService->linkCoach(action->savedCoachIds->getAt(i), action->primaryId,
-                                                -1);
-                    }
-                }
+                // RESTORE FLAG before linking coaches
+                Train* train = trainService->findTrain(action->primaryId);
+                if (train) train->setIsReversed(action->intData2 == 1);
 
                 // 3. Re-book the passengers into their specific seats
                 if (action->savedBookedSeats)

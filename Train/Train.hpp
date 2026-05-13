@@ -54,6 +54,9 @@ public:
     bool bookSeat(Seat::GlobalSeatNumber globalNumber);
     bool releaseSeat(Seat::GlobalSeatNumber globalNumber);
     BST<Seat::GlobalSeatNumber, Seat*>* getSeatingChart() const;
+
+    bool getIsReversed() const;
+    void setIsReversed(bool reversed);
 };
 
 #endif

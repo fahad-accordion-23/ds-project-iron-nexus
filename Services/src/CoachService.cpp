@@ -158,6 +158,35 @@ void CoachService::reverseTrain(Train::TrainID trainId)
     std::cout << "[CoachService] Train " << trainId << " orientation reversed.\n";
 }
 
+void CoachService::traverseTrain(Train::TrainID trainId) const
+{
+    Train* train = trainService->findTrain(trainId);
+    if (!train) return;
+
+    auto* coaches = train->getCoaches();
+    bool rev = train->getIsReversed();  // Check orientation
+
+    std::cout << "\n========== TRAIN " << trainId << " WALKTHROUGH ==========\n";
+    std::cout << "[Engine: " << train->getName() << "]";
+
+    if (coaches->isEmpty())
+    {
+        std::cout << " -> (No coaches attached)\n";
+    }
+    else
+    {
+        for (int i = 0; i < coaches->size(); i++)
+        {
+            // OPTIMIZATION: Calculate logical index
+            int idx = rev ? (coaches->size() - 1 - i) : i;
+            Coach* c = coaches->getAt(idx);
+            std::cout << " <-> [Coach " << c->getId() << ": " << c->getName() << "]";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "===============================================\n";
+}
+
 bool CoachService::bookSeat(Train::TrainID trainId, Seat::GlobalSeatNumber seatNumber)
 {
     Train* train = trainService->findTrain(trainId);

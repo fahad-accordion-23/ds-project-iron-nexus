@@ -21,16 +21,31 @@ private:
     Node* head;
     int count;
 
+private:
+    Node* getNodeAt(int index) const
+    {
+        if (index < 0 || index >= count)
+        {
+            throw std::out_of_range("Index out of range");
+        }
+
+        Node* current = head;
+
+        for (int i = 0; i < index; ++i)
+        {
+            current = current->next;
+        }
+
+        return current;
+    }
+
 public:
     CircularDoublyLinkedList();
     ~CircularDoublyLinkedList();
 
     void addFront(const T& value);
-
     void addEnd(const T& value);
-
     void insertAt(const T& value, int index);
-
     void removeAt(int index);
 
     template <typename Predicate>
@@ -65,43 +80,52 @@ template <typename T>
 void CircularDoublyLinkedList<T>::addFront(const T& value)
 {
     Node* newNode = new Node(value);
+
     if (isEmpty())
     {
+        newNode->next = newNode;
+        newNode->prev = newNode;
         head = newNode;
-        head->next = head;
-        head->prev = head;
     }
     else
     {
         Node* tail = head->prev;
+
         newNode->next = head;
         newNode->prev = tail;
-        head->prev = newNode;
+
         tail->next = newNode;
+        head->prev = newNode;
+
         head = newNode;
     }
-    count++;
+
+    ++count;
 }
 
 template <typename T>
 void CircularDoublyLinkedList<T>::addEnd(const T& value)
 {
     Node* newNode = new Node(value);
+
     if (isEmpty())
     {
+        newNode->next = newNode;
+        newNode->prev = newNode;
         head = newNode;
-        head->next = head;
-        head->prev = head;
     }
     else
     {
         Node* tail = head->prev;
+
         newNode->next = head;
         newNode->prev = tail;
-        head->prev = newNode;
+
         tail->next = newNode;
+        head->prev = newNode;
     }
-    count++;
+
+    ++count;
 }
 
 template <typename T>
@@ -111,30 +135,31 @@ void CircularDoublyLinkedList<T>::insertAt(const T& value, int index)
     {
         throw std::out_of_range("Index out of range");
     }
+
     if (index == 0)
     {
         addFront(value);
+        return;
     }
-    else if (index == count)
+
+    if (index == count)
     {
         addEnd(value);
+        return;
     }
-    else
-    {
-        Node* newNode = new Node(value);
-        Node* current = head;
-        for (int i = 0; i < index - 1; ++i)
-        {
-            current = current->next;
-        }
-        Node* nextNode = current->next;
 
-        newNode->prev = current;
-        newNode->next = nextNode;
-        current->next = newNode;
-        nextNode->prev = newNode;
-        count++;
-    }
+    Node* current = getNodeAt(index);
+    Node* previous = current->prev;
+
+    Node* newNode = new Node(value);
+
+    newNode->next = current;
+    newNode->prev = previous;
+
+    previous->next = newNode;
+    current->prev = newNode;
+
+    ++count;
 }
 
 template <typename T>
@@ -145,42 +170,47 @@ void CircularDoublyLinkedList<T>::removeAt(int index)
         throw std::out_of_range("Index out of range");
     }
 
-    Node* target = head;
+    Node* target = getNodeAt(index);
+
     if (count == 1)
     {
         head = nullptr;
     }
     else
     {
-        for (int i = 0; i < index; ++i)
-        {
-            target = target->next;
-        }
         target->prev->next = target->next;
         target->next->prev = target->prev;
-        if (index == 0)
+
+        if (target == head)
         {
-            head = target->next;
+            head = head->next;
         }
     }
+
     delete target;
-    count--;
+    --count;
 }
 
 template <typename T>
 template <typename Predicate>
 T CircularDoublyLinkedList<T>::find(Predicate predicate) const
 {
-    if (isEmpty()) throw std::runtime_error("List is empty");
+    if (isEmpty())
+    {
+        throw std::runtime_error("List is empty");
+    }
 
     Node* current = head;
+
     do
     {
         if (predicate(current->data))
         {
             return current->data;
         }
+
         current = current->next;
+
     } while (current != head);
 
     throw std::runtime_error("Element not found");
@@ -190,31 +220,43 @@ template <typename T>
 template <typename Func>
 void CircularDoublyLinkedList<T>::forEach(Func callback) const
 {
-    if (isEmpty()) return;
+    if (isEmpty())
+    {
+        return;
+    }
 
     Node* current = head;
+
     do
     {
         callback(current->data);
         current = current->next;
+
     } while (current != head);
 }
 
 template <typename T>
 void CircularDoublyLinkedList<T>::reverse()
 {
-    if (isEmpty() || count == 1) return;
+    if (count <= 1)
+    {
+        return;
+    }
 
     Node* current = head;
+
     do
     {
         Node* temp = current->next;
+
         current->next = current->prev;
         current->prev = temp;
+
         current = temp;
+
     } while (current != head);
 
-    head = head->prev;
+    head = head->next;
 }
 
 template <typename T>
@@ -224,39 +266,21 @@ int CircularDoublyLinkedList<T>::size() const
 }
 
 template <typename T>
-bool CircularDoublyLinkedList<T>::isEmpty() const
-{
-    return count == 0;
-}
-
-template <typename T>
 T& CircularDoublyLinkedList<T>::getAt(int index)
 {
-    if (isEmpty() || index < 0 || index >= count)
-    {
-        throw std::out_of_range("Index out of range");
-    }
-    Node* current = head;
-    for (int i = 0; i < index; ++i)
-    {
-        current = current->next;
-    }
-    return current->data;
+    return getNodeAt(index)->data;
 }
 
 template <typename T>
 const T& CircularDoublyLinkedList<T>::getAt(int index) const
 {
-    if (isEmpty() || index < 0 || index >= count)
-    {
-        throw std::out_of_range("Index out of range");
-    }
-    Node* current = head;
-    for (int i = 0; i < index; ++i)
-    {
-        current = current->next;
-    }
-    return current->data;
+    return getNodeAt(index)->data;
+}
+
+template <typename T>
+bool CircularDoublyLinkedList<T>::isEmpty() const
+{
+    return count == 0;
 }
 
 template <typename T>
