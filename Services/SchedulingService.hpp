@@ -4,14 +4,19 @@
 #include "../Railway/Station.hpp"
 #include "../Structures/HashTable.hpp"
 #include "../Train/Train.hpp"
+#include "./NetworkService.hpp"
+#include "./TrainService.hpp"
 
 class SchedulingService
 {
 private:
     HashTable<Train::TrainID, Station::StationID>* schedule;
 
+    TrainService* trainService;
+    NetworkService* networkService;
+
 public:
-    SchedulingService();
+    SchedulingService(TrainService* ts, NetworkService* ns);
     ~SchedulingService();
 
     void assignRoute(Train::TrainID trainId, Station::StationID startId, Station::StationID endId);

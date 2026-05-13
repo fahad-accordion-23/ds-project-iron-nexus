@@ -11,12 +11,15 @@ int main()
     TrainService trainService;
     CoachService coachService(&trainService);
     NetworkService networkService;
-    SchedulingService schedulingService;
+
+    SchedulingService schedulingService(&trainService, &networkService);
+
     LoggerService loggerService;
     UndoService undoService(&trainService, &coachService, &networkService, &schedulingService);
 
     TerminalUI ui(&trainService, &coachService, &networkService, &schedulingService, &loggerService,
                   &undoService);
+
     ui.start();
 
     return 0;

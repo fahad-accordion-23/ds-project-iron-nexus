@@ -530,12 +530,32 @@ void TerminalUI::handlePersistenceMenu()
         {
             case 1:
             {
-                trainService->saveData("trains.txt");
-                coachService->saveData("coaches.txt");
-                networkService->saveData("stations.txt");
-                schedulingService->saveData("schedule.txt");
-                loggerService->saveData("logs.txt");
-                std::cout << "System state saved successfully.\n";
+                int capacity = 0;  // Initialize to 0 to trigger the while loop
+                std::string name;
+                std::cout << "Enter Coach Name: ";
+                std::cin.ignore();
+                std::getline(std::cin, name);
+
+                // --- THE FIX: Input Validation Loop ---
+                while (capacity <= 0)
+                {
+                    std::cout << "Enter Capacity (must be > 0): ";
+                    std::cin >> capacity;
+
+                    if (capacity <= 0)
+                    {
+                        std::cout << "Invalid capacity! Please try again.\n";
+                    }
+                }
+                // --------------------------------------
+
+                int coachId = coachService->createCoach(name, capacity);
+                if (!undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::CREATE_COACH, coachId, -1, name,
+                                              capacity);
+                }
+                loggerService->logAction("COACH_CREATE", "Coach: " + name);
                 break;
             }
             case 2:

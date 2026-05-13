@@ -90,3 +90,15 @@ void NetworkService::showNetwork() const
     network->displayMap();
     std::cout << "==========================================\n";
 }
+
+Station* NetworkService::findStation(Station::StationID id) const
+{
+    try
+    {
+        return stationRegistry->search(id);
+    }
+    catch (...)
+    {
+        return nullptr;
+    }
+}

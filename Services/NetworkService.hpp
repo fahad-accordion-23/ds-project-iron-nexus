@@ -33,6 +33,8 @@ public:
     void suggestRoute(Station::StationID startId, Station::StationID endId);
 
     void showNetwork() const;
+
+    Station* findStation(Station::StationID id) const;
 };
 
 #endif

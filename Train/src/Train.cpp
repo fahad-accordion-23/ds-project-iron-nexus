@@ -113,6 +113,8 @@ void Train::reverseOrientation()
 {
     isReversed = !isReversed;
     coaches->reverse();
+
+    rebuildSeats();
 }
 
 Seat* Train::findSeat(Seat::GlobalSeatNumber globalNumber)

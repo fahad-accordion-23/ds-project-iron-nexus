@@ -4,9 +4,12 @@
 
 #include "../../Repositories/ScheduleRepository.hpp"
 
-SchedulingService::SchedulingService()
+SchedulingService::SchedulingService(TrainService* ts, NetworkService* ns)
 {
     schedule = new HashTable<Train::TrainID, Station::StationID>();
+
+    this->trainService = ts;
+    this->networkService = ns;
 }
 
 SchedulingService::~SchedulingService()
@@ -17,9 +20,40 @@ SchedulingService::~SchedulingService()
 void SchedulingService::assignRoute(Train::TrainID trainId, Station::StationID startId,
                                     Station::StationID endId)
 {
+    // 1. Validate Train
+    if (trainService->findTrain(trainId) == nullptr)
+    {
+        std::cout << "[SchedulingService] Error: Train " << trainId << " does not exist.\n";
+        return;
+    }
+
+    // 2. Validate Stations
+    if (networkService->findStation(startId) == nullptr)
+    {
+        std::cout << "[SchedulingService] Error: Start Station " << startId << " does not exist.\n";
+        return;
+    }
+    if (networkService->findStation(endId) == nullptr)
+    {
+        std::cout << "[SchedulingService] Error: Destination Station " << endId
+                  << " does not exist.\n";
+        return;
+    }
+
+    // 3. Optional: Map Start -> End to verify a path exists (Network bounds check)
+    if (startId == endId)
+    {
+        std::cout << "[SchedulingService] Error: Start and End stations cannot be the same.\n";
+        return;
+    }
+
+    // 4. Assign the route
     schedule->insert(trainId, endId);
-    std::cout << "[SchedulingService] Train " << trainId << " assigned route: Station " << startId
-              << " -> Station " << endId << "\n";
+    std::cout << "[SchedulingService] Train " << trainId << " successfully assigned route: Station "
+              << startId << " -> Station " << endId << "\n";
+
+    // As per your sequence diagram, optionally trigger the route suggestion
+    networkService->suggestRoute(startId, endId);
 }
 
 void SchedulingService::decommissionRoute(Train::TrainID trainId)
