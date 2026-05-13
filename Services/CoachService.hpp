@@ -49,6 +49,8 @@ public:
 
     void saveData(const std::string& filename) const;
     void loadData(const std::string& filename);
+
+    void exportStructuralData(const std::string& filename) const;
 };
 
 #endif

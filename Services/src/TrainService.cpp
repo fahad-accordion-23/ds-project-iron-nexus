@@ -103,3 +103,11 @@ void TrainService::loadData(const std::string& filename,
 {
     TrainRepository::loadFromFile(filename, trainRegistry, coachRegistry);
 }
+
+void TrainService::exportStructuralData(const std::string& filename) const
+{
+    if (trainRegistry)
+    {
+        trainRegistry->exportToVisualFile(filename);
+    }
+}

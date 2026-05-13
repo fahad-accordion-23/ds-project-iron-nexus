@@ -1,6 +1,7 @@
 #ifndef BST_HPP
 #define BST_HPP
 
+#include <fstream>
 #include <stdexcept>
 
 template <typename K, typename V>
@@ -26,6 +27,8 @@ private:
     Node* find(Node* node, K key) const;
     void clear(Node* node);
 
+    void exportNodeVisually(std::ofstream& file, Node* node, std::string prefix, bool isLeft) const;
+
 public:
     BST();
     ~BST();
@@ -42,6 +45,8 @@ public:
     void clear();
 
     bool isEmpty() const;
+
+    void exportToVisualFile(const std::string& filename) const;
 };
 
 template <typename K, typename V>
@@ -195,6 +200,35 @@ template <typename K, typename V>
 bool BST<K, V>::isEmpty() const
 {
     return root == nullptr;
+}
+
+template <typename K, typename V>
+void BST<K, V>::exportNodeVisually(std::ofstream& file, Node* node, std::string prefix,
+                                   bool isLeft) const
+{
+    if (node == nullptr) return;
+
+    file << prefix;
+    file << (isLeft ? "|-- " : "`-- ");
+    file << "[Seat " << node->key << "]\n";
+
+    std::string nextPrefix = prefix + (isLeft ? "|   " : "    ");
+
+    exportNodeVisually(file, node->left, nextPrefix, true);
+    exportNodeVisually(file, node->right, nextPrefix, false);
+}
+
+template <typename K, typename V>
+void BST<K, V>::exportToVisualFile(const std::string& filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open()) return;
+
+    file << "=== BST Structural Export ===\n";
+    file << "Root\n";
+    exportNodeVisually(file, root, "", false);
+
+    file.close();
 }
 
 #endif

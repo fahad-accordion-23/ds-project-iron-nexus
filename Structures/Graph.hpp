@@ -37,9 +37,11 @@ public:
 
     void removeEdge(const T& start, const T& end);
 
-    void findShortestPath(const T& start, const T& end);
+    template <typename PrintFunc>
+    void findShortestPath(const T& start, const T& end, PrintFunc printNode) const;
 
-    void displayGraph() const;
+    template <typename PrintFunc>
+    void displayGraph(PrintFunc printNode) const;
 
     template <typename Func>
     void forEachEdge(Func callback) const;
@@ -163,7 +165,8 @@ void Graph<T>::removeEdge(const T& start, const T& end)
 }
 
 template <typename T>
-void Graph<T>::findShortestPath(const T& start, const T& end)
+template <typename PrintFunc>
+void Graph<T>::findShortestPath(const T& start, const T& end, PrintFunc printNode) const
 {
     int startIndex = -1, endIndex = -1;
     int numVertices = vertices.size();
@@ -243,7 +246,7 @@ void Graph<T>::findShortestPath(const T& start, const T& end)
         std::cout << "Route: ";
         for (int i = 0; i < pathLen; i++)
         {
-            std::cout << vertices.getAt(path[i]).data;
+            printNode(vertices.getAt(path[i]).data);
             if (i < pathLen - 1) std::cout << " -> ";
         }
         std::cout << "\n";
@@ -256,16 +259,38 @@ void Graph<T>::findShortestPath(const T& start, const T& end)
 }
 
 template <typename T>
-void Graph<T>::displayGraph() const
+template <typename PrintFunc>
+void Graph<T>::displayGraph(PrintFunc printNode) const
 {
+    if (vertices.isEmpty())
+    {
+        std::cout << "Graph is empty.\n";
+        return;
+    }
+
     for (int i = 0; i < vertices.size(); i++)
     {
-        std::cout << vertices.getAt(i).data << " -> ";
+        // Use the custom function to print the primary node
+        printNode(vertices.getAt(i).data);
+        std::cout << " connects to: ";
+
         const auto& adjList = vertices.getAt(i).adjacencyList;
+        if (adjList.isEmpty())
+        {
+            std::cout << "(No tracks)\n";
+            continue;
+        }
+
+        // Iterate through all connected edges
         for (int j = 0; j < adjList.size(); j++)
         {
-            std::cout << vertices.getAt(adjList.getAt(j).destinationIndex).data << "("
-                      << adjList.getAt(j).weight << ") ";
+            int destIdx = adjList.getAt(j).destinationIndex;
+
+            // Use the custom function to print the destination node
+            printNode(vertices.getAt(destIdx).data);
+            std::cout << " [" << adjList.getAt(j).weight << " km]";
+
+            if (j < adjList.size() - 1) std::cout << ",  ";
         }
         std::cout << "\n";
     }

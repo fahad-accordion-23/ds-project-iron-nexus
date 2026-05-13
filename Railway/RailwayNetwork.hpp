@@ -27,7 +27,7 @@ public:
 
     void findOptimalRoute(Station::StationID startId, Station::StationID endId);
 
-    void displayMap() const;
+    void displayVisualMap() const;
 
     template <typename Func>
     void forEachTrack(Func callback) const;

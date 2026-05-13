@@ -556,8 +556,12 @@ void TerminalUI::handlePersistenceMenu()
                 networkService->saveData("stations.txt");
                 schedulingService->saveData("schedule.txt");
                 loggerService->saveData("logs.txt");
-                std::cout << "System state saved successfully.\n";
 
+                coachService->exportStructuralData("coaches_structural.txt");
+                trainService->exportStructuralData("trains_structural.txt");
+
+                std::cout << "System state saved successfully.\n";
+                std::cout << "Structural tree diagrams exported to *_structural.txt\n";
                 break;
             }
             case 2:

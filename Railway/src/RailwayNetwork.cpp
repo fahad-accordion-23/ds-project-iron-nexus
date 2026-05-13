@@ -79,11 +79,15 @@ void RailwayNetwork::findOptimalRoute(Station::StationID startId, Station::Stati
     Station* end = findStationById(endId);
     if (start && end)
     {
-        network->findShortestPath(start, end);
+        network->findShortestPath(start, end,
+                                  [](Station* st) { std::cout << "[" << st->getName() << "]"; });
     }
 }
-
-void RailwayNetwork::displayMap() const
+void RailwayNetwork::displayVisualMap() const
 {
-    network->displayGraph();
+    if (!network) return;
+
+    // Pass a lambda function that tells the graph HOW to print a Station*
+    network->displayGraph(
+        [](Station* st) { std::cout << "🚉 " << st->getName() << " (ID: " << st->getId() << ")"; });
 }

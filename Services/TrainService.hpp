@@ -33,6 +33,8 @@ public:
     void saveData(const std::string& filename) const;
     void loadData(const std::string& filename,
                   AVLTree<Coach::CoachID, Coach*>* coachRegistry = nullptr);
+
+    void exportStructuralData(const std::string& filename) const;
 };
 
 template <typename Func>

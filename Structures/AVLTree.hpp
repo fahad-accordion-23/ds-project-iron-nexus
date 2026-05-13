@@ -1,6 +1,7 @@
 #ifndef AVL_TREE_HPP
 #define AVL_TREE_HPP
 
+#include <fstream>
 #include <stdexcept>
 
 template <typename K, typename V>
@@ -46,8 +47,12 @@ public:
     bool isEmpty() const;
     void clear();
 
+    void exportToVisualFile(const std::string& filename) const;
+
 private:
     void clear(Node* node);
+
+    void exportNodeVisually(std::ofstream& file, Node* node, std::string prefix, bool isLeft) const;
 };
 
 template <typename K, typename V>
@@ -280,4 +285,37 @@ bool AVLTree<K, V>::isEmpty() const
     return root == nullptr;
 }
 
-#endif
+template <typename K, typename V>
+void AVLTree<K, V>::exportNodeVisually(std::ofstream& file, Node* node, std::string prefix,
+                                       bool isLeft) const
+{
+    if (node == nullptr) return;
+
+    file << prefix;
+    // Use ASCII characters for safe cross-platform file writing
+    file << (isLeft ? "|-- " : "`-- ");
+
+    // Print the Key (ID)
+    file << "[" << node->key << "]\n";
+
+    // Calculate the prefix for the next level down
+    std::string nextPrefix = prefix + (isLeft ? "|   " : "    ");
+
+    exportNodeVisually(file, node->left, nextPrefix, true);
+    exportNodeVisually(file, node->right, nextPrefix, false);
+}
+
+template <typename K, typename V>
+void AVLTree<K, V>::exportToVisualFile(const std::string& filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open()) return;
+
+    file << "=== AVL Tree Structural Export ===\n";
+    file << "Root\n";
+    exportNodeVisually(file, root, "", false);
+
+    file.close();
+}
+
+#endif  // AVL_TREE_HPP

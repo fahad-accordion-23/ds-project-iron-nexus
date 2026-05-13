@@ -87,7 +87,7 @@ void NetworkService::loadData(const std::string& filename)
 void NetworkService::showNetwork() const
 {
     std::cout << "\n========== RAILWAY NETWORK MAP ==========\n";
-    network->displayMap();
+    network->displayVisualMap();
     std::cout << "==========================================\n";
 }
 

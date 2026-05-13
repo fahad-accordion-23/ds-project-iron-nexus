@@ -265,3 +265,11 @@ void CoachService::loadData(const std::string& filename)
 {
     CoachRepository::loadFromFile(filename, coachRegistry);
 }
+
+void CoachService::exportStructuralData(const std::string& filename) const
+{
+    if (coachRegistry)
+    {
+        coachRegistry->exportToVisualFile(filename);
+    }
+}
