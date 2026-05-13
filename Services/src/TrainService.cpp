@@ -98,7 +98,8 @@ void TrainService::saveData(const std::string& filename) const
     TrainRepository::saveToFile(filename, trainRegistry);
 }
 
-void TrainService::loadData(const std::string& filename)
+void TrainService::loadData(const std::string& filename,
+                            AVLTree<Coach::CoachID, Coach*>* coachRegistry)
 {
-    TrainRepository::loadFromFile(filename, trainRegistry);
+    TrainRepository::loadFromFile(filename, trainRegistry, coachRegistry);
 }

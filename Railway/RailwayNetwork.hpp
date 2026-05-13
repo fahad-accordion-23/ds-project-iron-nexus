@@ -1,8 +1,6 @@
 #ifndef RAILWAY_NETWORK_HPP
 #define RAILWAY_NETWORK_HPP
 
-#include <string>
-
 #include "../Structures/Graph.hpp"
 #include "Station.hpp"
 
@@ -30,6 +28,15 @@ public:
     void findOptimalRoute(Station::StationID startId, Station::StationID endId);
 
     void displayMap() const;
+
+    template <typename Func>
+    void forEachTrack(Func callback) const;
 };
+
+template <typename Func>
+void RailwayNetwork::forEachTrack(Func callback) const
+{
+    if (network) network->forEachEdge(callback);
+}
 
 #endif

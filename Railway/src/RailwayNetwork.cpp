@@ -1,7 +1,5 @@
 #include "../RailwayNetwork.hpp"
 
-#include <iostream>
-
 RailwayNetwork::RailwayNetwork()
 {
     network = new Graph<Station*>();

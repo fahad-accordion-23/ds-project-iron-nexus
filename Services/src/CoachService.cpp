@@ -222,6 +222,11 @@ void CoachService::viewSeatingChart(Train::TrainID trainId) const
     std::cout << "================================================\n";
 }
 
+AVLTree<Coach::CoachID, Coach*>* CoachService::getCoachRegistry() const
+{
+    return coachRegistry;
+}
+
 void CoachService::saveData(const std::string& filename) const
 {
     CoachRepository::saveToFile(filename, coachRegistry);

@@ -1,6 +1,10 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+#include <climits>
+#include <iostream>
+#include <stdexcept>
+
 #include "CircularDoublyLinkedList.hpp"
 
 template <typename T>
@@ -36,11 +40,10 @@ public:
     void findShortestPath(const T& start, const T& end);
 
     void displayGraph() const;
-};
 
-#include <climits>
-#include <iostream>
-#include <stdexcept>
+    template <typename Func>
+    void forEachEdge(Func callback) const;
+};
 
 template <typename T>
 Graph<T>::Graph()
@@ -265,6 +268,22 @@ void Graph<T>::displayGraph() const
                       << adjList.getAt(j).weight << ") ";
         }
         std::cout << "\n";
+    }
+}
+
+template <typename T>
+template <typename Func>
+void Graph<T>::forEachEdge(Func callback) const
+{
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        const T& startData = vertices.getAt(i).data;
+        const auto& adjList = vertices.getAt(i).adjacencyList;
+        for (int j = 0; j < adjList.size(); j++)
+        {
+            const T& endData = vertices.getAt(adjList.getAt(j).destinationIndex).data;
+            callback(startData, endData, adjList.getAt(j).weight);
+        }
     }
 }
 

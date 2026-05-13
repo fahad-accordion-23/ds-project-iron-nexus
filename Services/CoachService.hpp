@@ -43,6 +43,8 @@ public:
 
     void viewSeatingChart(Train::TrainID trainId) const;
 
+    AVLTree<Coach::CoachID, Coach*>* getCoachRegistry() const;
+
     void saveData(const std::string& filename) const;
     void loadData(const std::string& filename);
 };

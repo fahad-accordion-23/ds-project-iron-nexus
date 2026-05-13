@@ -540,8 +540,8 @@ void TerminalUI::handlePersistenceMenu()
             }
             case 2:
             {
-                trainService->loadData("trains.txt");
                 coachService->loadData("coaches.txt");
+                trainService->loadData("trains.txt");
                 networkService->loadData("stations.txt");
                 schedulingService->loadData("schedule.txt");
                 loggerService->loadData("logs.txt");

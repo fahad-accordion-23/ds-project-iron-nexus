@@ -76,12 +76,12 @@ void NetworkService::suggestRoute(Station::StationID startId, Station::StationID
 
 void NetworkService::saveData(const std::string& filename) const
 {
-    StationRepository::saveToFile(filename, stationRegistry);
+    StationRepository::saveToFile(filename, stationRegistry, network);
 }
 
 void NetworkService::loadData(const std::string& filename)
 {
-    StationRepository::loadFromFile(filename, stationRegistry);
+    StationRepository::loadFromFile(filename, stationRegistry, network);
 }
 
 void NetworkService::showNetwork() const

@@ -27,8 +27,18 @@ public:
 
     void emergencyStop(Train::TrainID id);
 
+    template <typename Func>
+    void forEachTrain(Func callback) const;
+
     void saveData(const std::string& filename) const;
-    void loadData(const std::string& filename);
+    void loadData(const std::string& filename,
+                  AVLTree<Coach::CoachID, Coach*>* coachRegistry = nullptr);
 };
+
+template <typename Func>
+void TrainService::forEachTrain(Func callback) const
+{
+    if (trainRegistry) trainRegistry->traverseInOrder(callback);
+}
 
 #endif

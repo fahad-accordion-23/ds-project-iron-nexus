@@ -1,6 +1,8 @@
 #ifndef AVL_TREE_HPP
 #define AVL_TREE_HPP
 
+#include <stdexcept>
+
 template <typename K, typename V>
 class AVLTree
 {
@@ -47,8 +49,6 @@ public:
 private:
     void clear(Node* node);
 };
-
-#include <stdexcept>
 
 template <typename K, typename V>
 AVLTree<K, V>::AVLTree() : root(nullptr)
