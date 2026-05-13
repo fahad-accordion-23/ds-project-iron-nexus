@@ -58,6 +58,18 @@ void CoachService::linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int
     try
     {
         Coach* coach = coachRegistry->search(coachId);
+
+        // ==============================================================
+        // INVARIANT CHECK: Prevent a coach from being linked multiple times
+        // ==============================================================
+        if (coach->getIsAttached())
+        {
+            std::cout << "[CoachService] Error: Coach " << coachId
+                      << " is already attached to a train. Unlink it first.\n";
+            return;
+        }
+        // ==============================================================
+
         if (index == 0)
         {
             train->addCoachFront(coach);
@@ -70,9 +82,11 @@ void CoachService::linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int
         {
             train->insertCoach(coach, index);
         }
+
         std::cout << "[CoachService] Coach '" << coach->getName() << "' (ID: " << coach->getId()
                   << ") linked to Train " << trainId << ".\n";
 
+        // Mark it as actively in use!
         coach->setIsAttached(true);
     }
     catch (...)
