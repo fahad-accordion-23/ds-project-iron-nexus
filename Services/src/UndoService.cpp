@@ -28,8 +28,50 @@ void UndoService::recordAction(ActionType type, int primaryId, int secondaryId,
 {
     if (isUndoingRedoing) return;
 
-    UndoAction* action =
-        new UndoAction{type, primaryId, secondaryId, stringData, intData, intData2};
+    // Initialize the struct using standard member assignment
+    UndoAction* action = new UndoAction();
+    action->type = type;
+    action->primaryId = primaryId;
+    action->secondaryId = secondaryId;
+    action->stringData = stringData;
+    action->intData = intData;
+    action->intData2 = intData2;
+
+    // === NEW SNAPSHOT LOGIC ===
+    if (type == ActionType::REMOVE_TRAIN)
+    {
+        Train* train = trainService->findTrain(primaryId);
+        if (train)
+        {
+            // 1. Snapshot the Coach sequence
+            action->savedCoachIds = new CircularDoublyLinkedList<int>();
+            auto coaches = train->getCoaches();
+            if (coaches && !coaches->isEmpty())
+            {
+                for (int i = 0; i < coaches->size(); ++i)
+                {
+                    action->savedCoachIds->addEnd(coaches->getAt(i)->getId());
+                }
+            }
+
+            // 2. Snapshot the Booked Seats
+            action->savedBookedSeats = new CircularDoublyLinkedList<int>();
+            auto chart = train->getSeatingChart();
+            if (chart)
+            {
+                // Capture the action pointer so the lambda can write to it
+                chart->traverseInOrder(
+                    [action](Seat::GlobalSeatNumber sNum, Seat* seat)
+                    {
+                        if (seat->getStatus() == SeatStatus::Booked)
+                        {
+                            action->savedBookedSeats->addEnd(sNum);
+                        }
+                    });
+            }
+        }
+    }
+
     undoStack.push(action);
 
     while (!redoStack.isEmpty())
@@ -49,13 +91,40 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 trainService->removeTrain(action->primaryId);
             else
                 trainService->rehydrateTrain(action->primaryId, action->stringData);
+
             break;
 
         case ActionType::REMOVE_TRAIN:
             if (isUndo)
+            {
+                // 1. Recreate the base train shell
                 trainService->rehydrateTrain(action->primaryId, action->stringData);
+
+                // 2. Re-attach the exact coaches in the correct order
+                if (action->savedCoachIds)
+                {
+                    for (int i = 0; i < action->savedCoachIds->size(); i++)
+                    {
+                        coachService->linkCoach(action->savedCoachIds->getAt(i), action->primaryId,
+                                                -1);
+                    }
+                }
+
+                // 3. Re-book the passengers into their specific seats
+                if (action->savedBookedSeats)
+                {
+                    for (int i = 0; i < action->savedBookedSeats->size(); i++)
+                    {
+                        coachService->bookSeat(action->primaryId,
+                                               action->savedBookedSeats->getAt(i));
+                    }
+                }
+            }
             else
+            {
                 trainService->removeTrain(action->primaryId);
+            }
+
             break;
 
         case ActionType::CREATE_COACH:
@@ -64,6 +133,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
             else
                 coachService->rehydrateCoach(action->primaryId, action->stringData,
                                              action->intData);
+
             break;
 
         case ActionType::DELETE_COACH:
@@ -72,6 +142,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                                              action->intData);
             else
                 coachService->deleteCoach(action->primaryId);
+
             break;
 
         case ActionType::LINK_COACH:
@@ -79,6 +150,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 coachService->unlinkCoach(action->primaryId, action->secondaryId);
             else
                 coachService->linkCoach(action->primaryId, action->secondaryId, action->intData);
+
             break;
 
         case ActionType::UNLINK_COACH:
@@ -90,6 +162,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
 
         case ActionType::REVERSE_TRAIN:
             coachService->reverseTrain(action->primaryId);
+
             break;
 
         case ActionType::CREATE_STATION:
@@ -97,6 +170,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 networkService->deleteStation(action->primaryId);
             else
                 networkService->rehydrateStation(action->primaryId, action->stringData);
+
             break;
 
         case ActionType::DELETE_STATION:
@@ -104,6 +178,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 networkService->rehydrateStation(action->primaryId, action->stringData);
             else
                 networkService->deleteStation(action->primaryId);
+
             break;
 
         case ActionType::LINK_STATIONS:
@@ -112,6 +187,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
             else
                 networkService->linkStations(action->primaryId, action->secondaryId,
                                              action->intData);
+
             break;
 
         case ActionType::UNLINK_STATIONS:
@@ -120,6 +196,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                                              action->intData);
             else
                 networkService->unlinkStations(action->primaryId, action->secondaryId);
+
             break;
 
         case ActionType::BOOK_SEAT:
@@ -127,6 +204,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 coachService->cancelBooking(action->primaryId, action->secondaryId);
             else
                 coachService->bookSeat(action->primaryId, action->secondaryId);
+
             break;
 
         case ActionType::CANCEL_SEAT:
@@ -134,6 +212,7 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
                 coachService->bookSeat(action->primaryId, action->secondaryId);
             else
                 coachService->cancelBooking(action->primaryId, action->secondaryId);
+
             break;
 
         case ActionType::ASSIGN_ROUTE:
@@ -142,10 +221,12 @@ void UndoService::executeAction(UndoAction* action, bool isUndo)
             else
                 schedulingService->assignRoute(action->primaryId, action->secondaryId,
                                                action->intData);
+
             break;
 
         default:
             std::cout << "[UndoService] Action type not supported for Undo/Redo yet.\n";
+
             break;
     }
 

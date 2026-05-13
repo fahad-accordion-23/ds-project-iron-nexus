@@ -3,6 +3,11 @@
 
 #include <string>
 
+#include "../Services/CoachService.hpp"
+#include "../Services/NetworkService.hpp"
+#include "../Services/SchedulingService.hpp"
+#include "../Services/TrainService.hpp"
+#include "../Structures/CircularDoublyLinkedList.hpp"
 #include "../Structures/Stack.hpp"
 
 enum class ActionType
@@ -35,12 +40,16 @@ struct UndoAction
     std::string stringData;
     int intData;
     int intData2;
-};
 
-class TrainService;
-class CoachService;
-class NetworkService;
-class SchedulingService;
+    CircularDoublyLinkedList<int>* savedCoachIds = nullptr;
+    CircularDoublyLinkedList<int>* savedBookedSeats = nullptr;
+
+    ~UndoAction()
+    {
+        if (savedCoachIds) delete savedCoachIds;
+        if (savedBookedSeats) delete savedBookedSeats;
+    }
+};
 
 class UndoService
 {
