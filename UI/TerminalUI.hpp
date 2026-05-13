@@ -33,6 +33,8 @@ private:
 
     int getChoice();
 
+    void clearScreen();
+
 public:
     TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss,
                LoggerService* ls, UndoService* us);

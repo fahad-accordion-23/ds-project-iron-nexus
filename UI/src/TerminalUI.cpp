@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "../../Services/UndoService.hpp"
+#include "../ConsoleColors.hpp"  // <-- Include our new palette!
 
 TerminalUI::TerminalUI(TrainService* ts, CoachService* cs, NetworkService* ns,
                        SchedulingService* ss, LoggerService* ls, UndoService* us)
@@ -31,9 +32,12 @@ void TerminalUI::start()
 
 void TerminalUI::showMainMenu()
 {
-    std::cout << "\n====================================\n";
-    std::cout << "      🚂 THE IRON NEXUS UI 🚂       \n";
-    std::cout << "====================================\n";
+    std::cout << "\033[2J\033[H";
+
+    std::cout << Color::BOLD << Color::BLUE << "\n====================================\n";
+    std::cout << Color::CYAN << "      🚂 THE IRON NEXUS UI 🚂       \n";
+    std::cout << Color::BLUE << "====================================\n" << Color::RESET;
+
     std::cout << "1. Train Registry (Module 1)\n";
     std::cout << "2. Coach Management (Module 2)\n";
     std::cout << "3. Railway Network (Module 3)\n";
@@ -42,9 +46,10 @@ void TerminalUI::showMainMenu()
     std::cout << "6. Operation Logs (Module 5)\n";
     std::cout << "7. System Save/Load\n";
     std::cout << "8. Undo/Redo\n";
-    std::cout << "0. Exit\n";
-    std::cout << "------------------------------------\n";
-    std::cout << "Choice: ";
+    std::cout << Color::RED << "0. Exit\n" << Color::RESET;
+    std::cout << Color::BLUE << "------------------------------------\n" << Color::RESET;
+
+    std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
     int choice = getChoice();
     switch (choice)
@@ -77,7 +82,7 @@ void TerminalUI::showMainMenu()
             running = false;
             break;
         default:
-            std::cout << "Invalid choice!\n";
+            std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
     }
 }
 
@@ -98,14 +103,16 @@ void TerminalUI::handleTrainMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- [Module 1] Train Registry ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- [Module 1] Train Registry ---\n"
+                  << Color::RESET;
         std::cout << "1. Register New Train\n";
         std::cout << "2. Decommission (Remove) Train\n";
         std::cout << "3. Find Train by ID\n";
         std::cout << "4. List All Trains (Fleet Patrol)\n";
         std::cout << "5. Emergency Stop Command\n";
-        std::cout << "0. Back to Main Menu\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back to Main Menu\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
@@ -113,65 +120,69 @@ void TerminalUI::handleTrainMenu()
             case 1:
             {
                 std::string name;
-                std::cout << "Enter Train Name: ";
+                std::cout << Color::CYAN << "Enter Train Name: " << Color::RESET;
                 std::cin.ignore();
                 std::getline(std::cin, name);
 
                 int id = trainService->registerTrain(name);
                 if (!undoService->isActive())
-                {
                     undoService->recordAction(ActionType::REGISTER_TRAIN, id, -1, name);
-                }
                 loggerService->logAction("TRAIN_REGISTER", "Name: " + name);
+
+                clearScreen();
                 break;
             }
             case 2:
             {
                 int id;
-                std::cout << "Enter Train ID to remove: ";
+                std::cout << Color::CYAN << "Enter Train ID to remove: " << Color::RESET;
                 std::cin >> id;
                 Train* t = trainService->findTrain(id);
                 if (t && !undoService->isActive())
-                {
                     undoService->recordAction(ActionType::REMOVE_TRAIN, id, -1, t->getName());
-                }
                 trainService->removeTrain(id);
                 loggerService->logAction("TRAIN_REMOVE", "ID: " + std::to_string(id));
+
+                clearScreen();
                 break;
             }
             case 3:
             {
                 int id;
-                std::cout << "Enter Train ID to find: ";
+                std::cout << Color::CYAN << "Enter Train ID to find: " << Color::RESET;
                 std::cin >> id;
                 Train* t = trainService->findTrain(id);
                 if (t)
-                {
-                    std::cout << "[Found] " << t->getName() << " (ID: " << t->getId() << ")\n";
-                }
+                    std::cout << Color::GREEN << "[Found] " << t->getName()
+                              << " (ID: " << t->getId() << ")\n"
+                              << Color::RESET;
                 else
-                {
-                    std::cout << "Train not found.\n";
-                }
+                    std::cout << Color::RED << "Train not found.\n" << Color::RESET;
+
+                clearScreen();
                 break;
             }
             case 4:
                 trainService->listAllTrains();
+
+                clearScreen();
                 break;
             case 5:
             {
                 int id;
-                std::cout << "Enter Train ID for Emergency Stop: ";
+                std::cout << Color::CYAN << "Enter Train ID for Emergency Stop: " << Color::RESET;
                 std::cin >> id;
                 trainService->emergencyStop(id);
                 loggerService->logAction("EMERGENCY_STOP", "ID: " + std::to_string(id));
+
+                clearScreen();
                 break;
             }
             case 0:
                 back = true;
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -181,112 +192,123 @@ void TerminalUI::handleCoachMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- [Module 2] Coach Management ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- [Module 2] Coach Management ---\n"
+                  << Color::RESET;
         std::cout << "1. Create Standalone Coach\n";
         std::cout << "2. Delete Coach\n";
         std::cout << "3. Link Coach to Train\n";
         std::cout << "4. Unlink Coach from Train\n";
         std::cout << "5. Reverse Train\n";
         std::cout << "6. List All Coaches\n";
-        std::cout << "7. Traverse Train (View Linked Coaches)\n";  // <--- ADDED
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << "7. Traverse Train (View Linked Coaches)\n";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
         {
             case 1:
             {
-                int capacity = 0;  // Initialize to 0 to trigger the while loop
+                int capacity = 0;
                 std::string name;
-                std::cout << "Enter Coach Name: ";
+                std::cout << Color::CYAN << "Enter Coach Name: " << Color::RESET;
                 std::cin.ignore();
                 std::getline(std::cin, name);
 
-                // --- THE FIX: Input Validation Loop ---
                 while (capacity <= 0)
                 {
-                    std::cout << "Enter Capacity (must be > 0): ";
+                    std::cout << Color::CYAN << "Enter Capacity (must be > 0): " << Color::RESET;
                     std::cin >> capacity;
-
                     if (capacity <= 0)
-                    {
-                        std::cout << "Invalid capacity! Please try again.\n";
-                    }
+                        std::cout << Color::RED << "Invalid capacity! Please try again.\n"
+                                  << Color::RESET;
                 }
-                // --------------------------------------
 
                 int coachId = coachService->createCoach(name, capacity);
                 if (!undoService->isActive())
-                {
                     undoService->recordAction(ActionType::CREATE_COACH, coachId, -1, name,
                                               capacity);
-                }
                 loggerService->logAction("COACH_CREATE", "Coach: " + name);
+
+                clearScreen();
                 break;
             }
             case 2:
             {
                 int coachId;
-                std::cout << "Enter Coach ID to delete: ";
+                std::cout << Color::CYAN << "Enter Coach ID to delete: " << Color::RESET;
                 std::cin >> coachId;
                 coachService->deleteCoach(coachId);
                 loggerService->logAction("COACH_DELETE", "Coach ID: " + std::to_string(coachId));
+
+                clearScreen();
                 break;
             }
             case 3:
             {
                 int trainId, coachId, position;
-                std::cout << "Enter Coach ID: ";
+                std::cout << Color::CYAN << "Enter Coach ID: " << Color::RESET;
                 std::cin >> coachId;
-                std::cout << "Enter Train ID: ";
+                std::cout << Color::CYAN << "Enter Train ID: " << Color::RESET;
                 std::cin >> trainId;
-                std::cout << "Enter Position (-1 for end, 0 for front): ";
+                std::cout << Color::CYAN
+                          << "Enter Position (-1 for end, 0 for front): " << Color::RESET;
                 std::cin >> position;
                 coachService->linkCoach(coachId, trainId, position);
                 loggerService->logAction("COACH_LINK", "Coach ID: " + std::to_string(coachId) +
                                                            " to Train: " + std::to_string(trainId));
+
+                clearScreen();
                 break;
             }
             case 4:
             {
                 int trainId, coachId;
-                std::cout << "Enter Coach ID: ";
+                std::cout << Color::CYAN << "Enter Coach ID: " << Color::RESET;
                 std::cin >> coachId;
-                std::cout << "Enter Train ID to unlink from: ";
+                std::cout << Color::CYAN << "Enter Train ID to unlink from: " << Color::RESET;
                 std::cin >> trainId;
                 coachService->unlinkCoach(coachId, trainId);
                 loggerService->logAction("COACH_UNLINK",
                                          "Coach ID: " + std::to_string(coachId) +
                                              " from Train: " + std::to_string(trainId));
+
+                clearScreen();
                 break;
             }
             case 5:
             {
                 int trainId;
-                std::cout << "Enter Train ID to reverse: ";
+                std::cout << Color::CYAN << "Enter Train ID to reverse: " << Color::RESET;
                 std::cin >> trainId;
                 coachService->reverseTrain(trainId);
                 loggerService->logAction("TRAIN_REVERSE", "Train: " + std::to_string(trainId));
+
+                clearScreen();
                 break;
             }
             case 6:
                 coachService->listAllCoaches();
+
+                clearScreen();
                 break;
             case 7:
             {
                 int trainId;
-                std::cout << "Enter Train ID to traverse: ";
+                std::cout << Color::CYAN << "Enter Train ID to traverse: " << Color::RESET;
                 std::cin >> trainId;
                 coachService->traverseTrain(trainId);
                 loggerService->logAction("TRAIN_TRAVERSE", "Train: " + std::to_string(trainId));
+
+                clearScreen();
                 break;
             }
             case 0:
                 back = true;
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -296,15 +318,17 @@ void TerminalUI::handleNetworkMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- [Module 3] Railway Network ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- [Module 3] Railway Network ---\n"
+                  << Color::RESET;
         std::cout << "1. Add Station\n";
         std::cout << "2. Add Track (Link Stations)\n";
         std::cout << "3. Remove Station\n";
         std::cout << "4. Remove Track\n";
         std::cout << "5. Find Shortest Path\n";
         std::cout << "6. Show Network Map\n";
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
@@ -312,77 +336,85 @@ void TerminalUI::handleNetworkMenu()
             case 1:
             {
                 std::string name;
-                std::cout << "Enter Station Name: ";
+                std::cout << Color::CYAN << "Enter Station Name: " << Color::RESET;
                 std::cin.ignore();
                 std::getline(std::cin, name);
                 int stationId = networkService->createStation(name);
                 if (!undoService->isActive())
-                {
                     undoService->recordAction(ActionType::CREATE_STATION, stationId, -1, name);
-                }
                 loggerService->logAction("STATION_ADD", "Name: " + name);
+
+                clearScreen();
                 break;
             }
             case 2:
             {
                 int startId, endId, distance;
-                std::cout << "Enter Start Station ID: ";
+                std::cout << Color::CYAN << "Enter Start Station ID: " << Color::RESET;
                 std::cin >> startId;
-                std::cout << "Enter End Station ID: ";
+                std::cout << Color::CYAN << "Enter End Station ID: " << Color::RESET;
                 std::cin >> endId;
-                std::cout << "Enter Distance (km): ";
+                std::cout << Color::CYAN << "Enter Distance (km): " << Color::RESET;
                 std::cin >> distance;
                 networkService->linkStations(startId, endId, distance);
                 if (!undoService->isActive())
-                {
                     undoService->recordAction(ActionType::LINK_STATIONS, startId, endId, "",
                                               distance);
-                }
                 loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) +
                                                           " To: " + std::to_string(endId));
+
+                clearScreen();
                 break;
             }
             case 3:
             {
                 int id;
-                std::cout << "Enter Station ID to remove: ";
+                std::cout << Color::CYAN << "Enter Station ID to remove: " << Color::RESET;
                 std::cin >> id;
                 networkService->deleteStation(id);
                 loggerService->logAction("STATION_REMOVE", "ID: " + std::to_string(id));
+
+                clearScreen();
                 break;
             }
             case 4:
             {
                 int startId, endId;
-                std::cout << "Enter Start Station ID: ";
+                std::cout << Color::CYAN << "Enter Start Station ID: " << Color::RESET;
                 std::cin >> startId;
-                std::cout << "Enter End Station ID: ";
+                std::cout << Color::CYAN << "Enter End Station ID: " << Color::RESET;
                 std::cin >> endId;
                 networkService->unlinkStations(startId, endId);
                 loggerService->logAction("TRACK_REMOVE", "From: " + std::to_string(startId) +
                                                              " To: " + std::to_string(endId));
+
+                clearScreen();
                 break;
             }
             case 5:
             {
                 int startId, endId;
-                std::cout << "Enter Start Station ID: ";
+                std::cout << Color::CYAN << "Enter Start Station ID: " << Color::RESET;
                 std::cin >> startId;
-                std::cout << "Enter End Station ID: ";
+                std::cout << Color::CYAN << "Enter End Station ID: " << Color::RESET;
                 std::cin >> endId;
                 networkService->suggestRoute(startId, endId);
                 loggerService->logAction("PATH_FIND", "From: " + std::to_string(startId) +
                                                           " To: " + std::to_string(endId));
+
+                clearScreen();
                 break;
             }
             case 6:
                 networkService->showNetwork();
+
+                clearScreen();
                 break;
             case 0:
                 back = true;
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -392,13 +424,15 @@ void TerminalUI::handleSeatingMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- [Module 4] Seating Chart ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- [Module 4] Seating Chart ---\n"
+                  << Color::RESET;
         std::cout << "1. Book Seat\n";
         std::cout << "2. Cancel Booking\n";
         std::cout << "3. Check Seat Status\n";
         std::cout << "4. View Seating Chart\n";
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
@@ -406,56 +440,67 @@ void TerminalUI::handleSeatingMenu()
             case 1:
             {
                 int trainId, seatNo;
-                std::cout << "Enter Train ID: ";
+                std::cout << Color::CYAN << "Enter Train ID: " << Color::RESET;
                 std::cin >> trainId;
-                std::cout << "Enter Global Seat Number: ";
+                std::cout << Color::CYAN << "Enter Global Seat Number: " << Color::RESET;
                 std::cin >> seatNo;
                 if (coachService->bookSeat(trainId, seatNo))
                 {
                     loggerService->logAction("SEAT_BOOK", "Train: " + std::to_string(trainId) +
                                                               " Seat: " + std::to_string(seatNo));
+
+                    clearScreen();
                 }
                 break;
             }
             case 2:
             {
                 int trainId, seatNo;
-                std::cout << "Enter Train ID: ";
+                std::cout << Color::CYAN << "Enter Train ID: " << Color::RESET;
                 std::cin >> trainId;
-                std::cout << "Enter Global Seat Number: ";
+                std::cout << Color::CYAN << "Enter Global Seat Number: " << Color::RESET;
                 std::cin >> seatNo;
                 if (coachService->cancelBooking(trainId, seatNo))
                 {
                     loggerService->logAction("SEAT_CANCEL", "Train: " + std::to_string(trainId) +
                                                                 " Seat: " + std::to_string(seatNo));
                 }
+
+                clearScreen();
                 break;
             }
             case 3:
             {
                 int trainId, seatNo;
-                std::cout << "Enter Train ID: ";
+                std::cout << Color::CYAN << "Enter Train ID: " << Color::RESET;
                 std::cin >> trainId;
-                std::cout << "Enter Global Seat Number: ";
+                std::cout << Color::CYAN << "Enter Global Seat Number: " << Color::RESET;
                 std::cin >> seatNo;
                 SeatStatus status = coachService->checkSeatStatus(trainId, seatNo);
                 std::cout << "Seat Status: "
-                          << (status == SeatStatus::Available ? "Available" : "Booked") << "\n";
+                          << (status == SeatStatus::Available ? Color::GREEN + "Available"
+                                                              : Color::RED + "Booked")
+                          << Color::RESET << "\n";
+
+                clearScreen();
                 break;
             }
             case 4:
             {
                 int trainId;
-                std::cout << "Enter Train ID: ";
+                std::cout << Color::CYAN << "Enter Train ID: " << Color::RESET;
                 std::cin >> trainId;
                 coachService->viewSeatingChart(trainId);
+
+                clearScreen();
                 break;
             }
             case 0:
                 back = true;
+
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -465,11 +510,13 @@ void TerminalUI::handleSchedulingMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- Scheduling (Operations) ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- Scheduling (Operations) ---\n"
+                  << Color::RESET;
         std::cout << "1. Assign Route\n";
         std::cout << "2. Show Schedule\n";
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
@@ -477,26 +524,31 @@ void TerminalUI::handleSchedulingMenu()
             case 1:
             {
                 int trainId, startId, endId;
-                std::cout << "Enter Train ID: ";
+                std::cout << Color::CYAN << "Enter Train ID: " << Color::RESET;
                 std::cin >> trainId;
-                std::cout << "Enter Start Station ID: ";
+                std::cout << Color::CYAN << "Enter Start Station ID: " << Color::RESET;
                 std::cin >> startId;
-                std::cout << "Enter Destination Station ID: ";
+                std::cout << Color::CYAN << "Enter Destination Station ID: " << Color::RESET;
                 std::cin >> endId;
                 schedulingService->assignRoute(trainId, startId, endId);
                 loggerService->logAction("SCHEDULE_ASSIGN",
                                          "Train: " + std::to_string(trainId) + " to Route: " +
                                              std::to_string(startId) + "-" + std::to_string(endId));
+
+                clearScreen();
                 break;
             }
             case 2:
                 schedulingService->showSchedule();
+
+                clearScreen();
                 break;
             case 0:
                 back = true;
+
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -506,11 +558,13 @@ void TerminalUI::handleLogsMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- [Module 5] System Logs ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- [Module 5] System Logs ---\n"
+                  << Color::RESET;
         std::cout << "1. Show Recent Logs\n";
         std::cout << "2. Clear Logs\n";
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
@@ -518,19 +572,23 @@ void TerminalUI::handleLogsMenu()
             case 1:
             {
                 int count;
-                std::cout << "How many logs to show? ";
+                std::cout << Color::CYAN << "How many logs to show? " << Color::RESET;
                 std::cin >> count;
                 loggerService->showRecentLogs(count);
+
+                clearScreen();
                 break;
             }
             case 2:
                 loggerService->clearLogs();
+
+                clearScreen();
                 break;
             case 0:
                 back = true;
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -540,11 +598,12 @@ void TerminalUI::handlePersistenceMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- System Save/Load ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- System Save/Load ---\n" << Color::RESET;
         std::cout << "1. Save System State\n";
         std::cout << "2. Load System State\n";
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
@@ -560,8 +619,12 @@ void TerminalUI::handlePersistenceMenu()
                 coachService->exportStructuralData("coaches_structural.txt");
                 trainService->exportStructuralData("trains_structural.txt");
 
-                std::cout << "System state saved successfully.\n";
-                std::cout << "Structural tree diagrams exported to *_structural.txt\n";
+                std::cout << Color::GREEN << "System state saved successfully.\n" << Color::RESET;
+                std::cout << Color::GREEN
+                          << "Structural tree diagrams exported to *_structural.txt\n"
+                          << Color::RESET;
+
+                clearScreen();
                 break;
             }
             case 2:
@@ -571,8 +634,9 @@ void TerminalUI::handlePersistenceMenu()
                 networkService->loadData("stations.txt");
                 schedulingService->loadData("schedule.txt");
                 loggerService->loadData("logs.txt");
-                std::cout << "System state loaded successfully.\n";
+                std::cout << Color::GREEN << "System state loaded successfully.\n" << Color::RESET;
 
+                clearScreen();
                 break;
             }
             case 0:
@@ -580,7 +644,7 @@ void TerminalUI::handlePersistenceMenu()
 
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
 }
@@ -590,26 +654,42 @@ void TerminalUI::handleUndoRedoMenu()
     bool back = false;
     while (!back)
     {
-        std::cout << "\n--- Undo / Redo ---\n";
+        std::cout << "\033[2J\033[H";
+        std::cout << Color::BOLD << Color::CYAN << "\n--- Undo / Redo ---\n" << Color::RESET;
         std::cout << "1. Undo Last Action\n";
         std::cout << "2. Redo Last Action\n";
-        std::cout << "0. Back\n";
-        std::cout << "Choice: ";
+        std::cout << Color::RED << "0. Back\n" << Color::RESET;
+        std::cout << Color::YELLOW << "Choice: " << Color::RESET;
 
         int choice = getChoice();
         switch (choice)
         {
             case 1:
                 undoService->undo();
+
                 break;
             case 2:
                 undoService->redo();
+
                 break;
             case 0:
                 back = true;
+
                 break;
             default:
-                std::cout << "Invalid choice!\n";
+                std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
         }
     }
+}
+
+void TerminalUI::clearScreen()
+{
+    std::cout << "\nPress Enter to continue...";
+    std::cin.clear();
+    // Peek to check if there's already a newline in the buffer to avoid double-pausing
+    if (std::cin.peek() == '\n') std::cin.ignore();
+    std::cin.get();
+
+    // Clear the screen and move cursor to top
+    std::cout << "\033[2J\033[H";
 }
