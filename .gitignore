@@ -65,10 +65,4 @@ TestResults/
 documentation
 # Iron Nexus Build Artifacts
 build/
-*.o
-iron-nexus
-coaches.txt
-logs.txt
-schedule.txt
-stations.txt
-trains.txt
+data/

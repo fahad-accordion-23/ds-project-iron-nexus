@@ -1,5 +1,6 @@
 #include "../TerminalUI.hpp"
 
+#include <filesystem>
 #include <iostream>
 
 #include "../../Services/UndoService.hpp"
@@ -659,14 +660,16 @@ void TerminalUI::handlePersistenceMenu()
         {
             case 1:
             {
-                coachService->saveData("coaches.txt");
-                trainService->saveData("trains.txt");
-                networkService->saveData("stations.txt");
-                schedulingService->saveData("schedule.txt");
-                loggerService->saveData("logs.txt");
+                std::filesystem::create_directory("data");
 
-                coachService->exportStructuralData("coaches_structural.txt");
-                trainService->exportStructuralData("trains_structural.txt");
+                coachService->saveData("./data/coaches.txt");
+                trainService->saveData("./data/trains.txt");
+                networkService->saveData("./data/stations.txt");
+                schedulingService->saveData("./data/schedule.txt");
+                loggerService->saveData("./data/logs.txt");
+
+                coachService->exportStructuralData("./data/coaches_structural.txt");
+                trainService->exportStructuralData("./data/trains_structural.txt");
 
                 std::cout << Color::GREEN << "System state saved successfully.\n" << Color::RESET;
                 std::cout << Color::GREEN
@@ -678,11 +681,11 @@ void TerminalUI::handlePersistenceMenu()
             }
             case 2:
             {
-                coachService->loadData("coaches.txt");
-                trainService->loadData("trains.txt", coachService->getCoachRegistry());
-                networkService->loadData("stations.txt");
-                schedulingService->loadData("schedule.txt");
-                loggerService->loadData("logs.txt");
+                coachService->loadData("data/coaches.txt");
+                trainService->loadData("data/trains.txt", coachService->getCoachRegistry());
+                networkService->loadData("data/stations.txt");
+                schedulingService->loadData("data/schedule.txt");
+                loggerService->loadData("data/logs.txt");
                 std::cout << Color::GREEN << "System state loaded successfully.\n" << Color::RESET;
 
                 clearScreen();
