@@ -29,6 +29,18 @@ void TrainService::removeTrain(Train::TrainID id)
     try
     {
         Train* train = trainRegistry->search(id);
+
+        // === INVARIANT FIX 3: Free the physical coaches before deleting the train ===
+        auto coaches = train->getCoaches();
+        if (coaches && !coaches->isEmpty())
+        {
+            for (int i = 0; i < coaches->size(); i++)
+            {
+                coaches->getAt(i)->setIsAttached(false);
+            }
+        }
+        // ============================================================================
+
         trainRegistry->remove(id);
         std::cout << "[TrainService] Decommissioned train '" << train->getName() << "' (ID: " << id
                   << ")\n";
