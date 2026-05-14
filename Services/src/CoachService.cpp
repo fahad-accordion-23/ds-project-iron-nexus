@@ -55,6 +55,23 @@ void CoachService::linkCoach(Coach::CoachID coachId, Train::TrainID trainId, int
         return;
     }
 
+    // === INVARIANT FIX 1: Prevent modifying a train with active bookings ===
+    bool hasBookings = false;
+    if (train->getSeatingChart())
+    {
+        train->getSeatingChart()->traverseInOrder(
+            [&hasBookings](Seat::GlobalSeatNumber, Seat* seat)
+            {
+                if (seat->getStatus() == SeatStatus::Booked) hasBookings = true;
+            });
+    }
+    if (hasBookings)
+    {
+        std::cout << "[CoachService] Error: Cannot modify train structure while passengers are "
+                     "booked. Cancel all bookings first.\n";
+        return;
+    }
+
     try
     {
         Coach* coach = coachRegistry->search(coachId);
@@ -101,6 +118,23 @@ void CoachService::unlinkCoach(Coach::CoachID coachId, Train::TrainID trainId)
     if (!train)
     {
         std::cout << "[CoachService] Error: Train ID " << trainId << " not found.\n";
+        return;
+    }
+
+    // === INVARIANT FIX 1: Prevent modifying a train with active bookings ===
+    bool hasBookings = false;
+    if (train->getSeatingChart())
+    {
+        train->getSeatingChart()->traverseInOrder(
+            [&hasBookings](Seat::GlobalSeatNumber, Seat* seat)
+            {
+                if (seat->getStatus() == SeatStatus::Booked) hasBookings = true;
+            });
+    }
+    if (hasBookings)
+    {
+        std::cout << "[CoachService] Error: Cannot modify train structure while passengers are "
+                     "booked. Cancel all bookings first.\n";
         return;
     }
 
@@ -165,6 +199,23 @@ void CoachService::reverseTrain(Train::TrainID trainId)
     if (!train)
     {
         std::cout << "[CoachService] Error: Train ID " << trainId << " not found.\n";
+        return;
+    }
+
+    // === INVARIANT FIX 1: Prevent modifying a train with active bookings ===
+    bool hasBookings = false;
+    if (train->getSeatingChart())
+    {
+        train->getSeatingChart()->traverseInOrder(
+            [&hasBookings](Seat::GlobalSeatNumber, Seat* seat)
+            {
+                if (seat->getStatus() == SeatStatus::Booked) hasBookings = true;
+            });
+    }
+    if (hasBookings)
+    {
+        std::cout << "[CoachService] Error: Cannot modify train structure while passengers are "
+                     "booked. Cancel all bookings first.\n";
         return;
     }
 
