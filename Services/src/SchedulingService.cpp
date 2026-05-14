@@ -3,6 +3,8 @@
 #include <iostream>
 
 #include "../../Repositories/ScheduleRepository.hpp"
+#include "../../Structures/Stack.hpp"
+#include "../../UI/ConsoleColors.hpp"
 
 SchedulingService::SchedulingService(TrainService* ts, NetworkService* ns)
 {
@@ -47,10 +49,28 @@ void SchedulingService::assignRoute(Train::TrainID trainId, Station::StationID s
         return;
     }
 
+    // === INVARIANT FIX 6: Prevent Silent Overwrites ===
+    try
+    {
+        schedule->search(trainId);
+        // If search succeeds, it means a route already exists!
+        std::cout << Color::RED << "[SchedulingService] Error: Train " << trainId
+                  << " is already scheduled. Please decommission its current route first.\n"
+                  << Color::RESET;
+        return;
+    }
+    catch (...)
+    {
+        // Expected behavior: Train is not scheduled. Proceed.
+    }
+    // ==================================================
+
     // 4. Assign the route
     schedule->insert(trainId, endId);
-    std::cout << "[SchedulingService] Train " << trainId << " successfully assigned route: Station "
-              << startId << " -> Station " << endId << "\n";
+    std::cout << Color::GREEN << "[SchedulingService] Train " << trainId
+              << " successfully assigned route: Station " << startId << " -> Station " << endId
+              << "\n"
+              << Color::RESET;
 
     // As per your sequence diagram, optionally trigger the route suggestion
     networkService->suggestRoute(startId, endId);
@@ -107,4 +127,28 @@ void SchedulingService::saveData(const std::string& filename) const
 void SchedulingService::loadData(const std::string& filename)
 {
     ScheduleRepository::loadFromFile(filename, schedule);
+}
+
+void SchedulingService::clearRoutesByStation(Station::StationID stationId)
+{
+    // We cannot modify a HashTable while iterating it, so we use a Stack to hold IDs to remove
+    Stack<Train::TrainID> toRemove;
+
+    schedule->forEach(
+        [&toRemove, stationId](Train::TrainID tId, Station::StationID sId)
+        {
+            if (sId == stationId)
+            {
+                toRemove.push(tId);
+            }
+        });
+
+    while (!toRemove.isEmpty())
+    {
+        Train::TrainID tId = toRemove.pop();
+        schedule->remove(tId);
+        std::cout << Color::YELLOW << "[SchedulingService] Auto-cleared route for Train " << tId
+                  << " due to station closure.\n"
+                  << Color::RESET;
+    }
 }

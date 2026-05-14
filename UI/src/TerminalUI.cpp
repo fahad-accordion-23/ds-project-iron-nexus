@@ -138,11 +138,22 @@ void TerminalUI::handleTrainMenu()
                 std::cout << Color::CYAN << "Enter Train ID to remove: " << Color::RESET;
                 std::cin >> id;
                 Train* t = trainService->findTrain(id);
-                if (t && !undoService->isActive())
-                    undoService->recordAction(ActionType::REMOVE_TRAIN, id, -1, t->getName());
-                trainService->removeTrain(id);
-                loggerService->logAction("TRAIN_REMOVE", "ID: " + std::to_string(id));
+                if (t)
+                {
+                    if (!undoService->isActive())
+                        undoService->recordAction(ActionType::REMOVE_TRAIN, id, -1, t->getName());
 
+                    // === INVARIANT FIX 4: Cascading Delete ===
+                    schedulingService->decommissionRoute(id);
+                    // =========================================
+
+                    trainService->removeTrain(id);
+                    loggerService->logAction("TRAIN_REMOVE", "ID: " + std::to_string(id));
+                }
+                else
+                {
+                    std::cout << Color::RED << "Train not found.\n" << Color::RESET;
+                }
                 clearScreen();
                 break;
             }
@@ -349,17 +360,34 @@ void TerminalUI::handleNetworkMenu()
             }
             case 2:
             {
-                int startId, endId, distance;
+                int startId, endId;
+                int distance = 0;  // Initialize to 0 to trigger the loop
+
                 std::cout << Color::CYAN << "Enter Start Station ID: " << Color::RESET;
                 std::cin >> startId;
                 std::cout << Color::CYAN << "Enter End Station ID: " << Color::RESET;
                 std::cin >> endId;
-                std::cout << Color::CYAN << "Enter Distance (km): " << Color::RESET;
-                std::cin >> distance;
+
+                // === INVARIANT FIX 5: Validate Distance ===
+                while (distance <= 0)
+                {
+                    std::cout << Color::CYAN
+                              << "Enter Distance (km, must be > 0): " << Color::RESET;
+                    std::cin >> distance;
+                    if (distance <= 0)
+                    {
+                        std::cout << Color::RED
+                                  << "Invalid distance! Please enter a positive number.\n"
+                                  << Color::RESET;
+                    }
+                }
+                // ==========================================
+
                 networkService->linkStations(startId, endId, distance);
                 if (!undoService->isActive())
                     undoService->recordAction(ActionType::LINK_STATIONS, startId, endId, "",
                                               distance);
+
                 loggerService->logAction("TRACK_ADD", "From: " + std::to_string(startId) +
                                                           " To: " + std::to_string(endId));
 
@@ -371,6 +399,11 @@ void TerminalUI::handleNetworkMenu()
                 int id;
                 std::cout << Color::CYAN << "Enter Station ID to remove: " << Color::RESET;
                 std::cin >> id;
+
+                // === INVARIANT FIX 4: Cascading Delete ===
+                schedulingService->clearRoutesByStation(id);
+                // =========================================
+
                 networkService->deleteStation(id);
                 loggerService->logAction("STATION_REMOVE", "ID: " + std::to_string(id));
 

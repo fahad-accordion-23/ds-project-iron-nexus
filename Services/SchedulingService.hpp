@@ -29,6 +29,8 @@ public:
 
     void saveData(const std::string& filename) const;
     void loadData(const std::string& filename);
+
+    void clearRoutesByStation(Station::StationID stationId);
 };
 
 #endif
