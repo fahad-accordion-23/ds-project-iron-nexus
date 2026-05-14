@@ -8,29 +8,33 @@ void LogRepository::saveToFile(const std::string& filename, const Stack<LogEntry
 
     Stack<LogEntry*> temp;
     Stack<LogEntry*>* source = const_cast<Stack<LogEntry*>*>(storage);
-    Stack<LogEntry*> backup;
 
+    // 1. Pour source into temp (Reverses the order so Oldest is at the top)
     while (!source->isEmpty())
     {
-        LogEntry* e = source->pop();
-        temp.push(e);
+        temp.push(source->pop());
     }
 
     std::ofstream file(filename);
     if (file.is_open())
     {
+        // 2. Pour temp back into source as we write!
+        // This writes chronologically AND perfectly restores the memory stack.
         while (!temp.isEmpty())
         {
             LogEntry* e = temp.pop();
             file << e->getAction() << "|" << e->getTimestamp() << "|" << e->getMetadata() << "\n";
-            backup.push(e);
+            source->push(e);
         }
         file.close();
     }
-
-    while (!backup.isEmpty())
+    else
     {
-        source->push(backup.pop());
+        // Failsafe: If the file is locked, we still MUST restore the memory stack
+        while (!temp.isEmpty())
+        {
+            source->push(temp.pop());
+        }
     }
 }
 

@@ -13,7 +13,8 @@ UndoService::UndoService(TrainService* ts, CoachService* cs, NetworkService* ns,
       coachService(cs),
       networkService(ns),
       schedulingService(ss),
-      isUndoingRedoing(false)
+      isUndoingRedoing(false),
+      loggerService(ls)
 {
 }
 
