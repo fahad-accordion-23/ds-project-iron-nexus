@@ -83,6 +83,7 @@ void TerminalUI::showMainMenu()
             break;
         default:
             std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+            clearScreen();
     }
 }
 
@@ -121,7 +122,7 @@ void TerminalUI::handleTrainMenu()
             {
                 std::string name;
                 std::cout << Color::CYAN << "Enter Train Name: " << Color::RESET;
-                std::cin.ignore();
+                std::cin.ignore(10000, '\n');
                 std::getline(std::cin, name);
 
                 int id = trainService->registerTrain(name);
@@ -144,7 +145,7 @@ void TerminalUI::handleTrainMenu()
                         undoService->recordAction(ActionType::REMOVE_TRAIN, id, -1, t->getName());
 
                     // === INVARIANT FIX 4: Cascading Delete ===
-                    schedulingService->decommissionRoute(id);
+                    schedulingService->decommissionRoute(id, true);
                     // =========================================
 
                     trainService->removeTrain(id);
@@ -194,6 +195,7 @@ void TerminalUI::handleTrainMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -224,7 +226,7 @@ void TerminalUI::handleCoachMenu()
                 int capacity = 0;
                 std::string name;
                 std::cout << Color::CYAN << "Enter Coach Name: " << Color::RESET;
-                std::cin.ignore();
+                std::cin.ignore(10000, '\n');
                 std::getline(std::cin, name);
 
                 while (capacity <= 0)
@@ -293,6 +295,14 @@ void TerminalUI::handleCoachMenu()
                 int trainId;
                 std::cout << Color::CYAN << "Enter Train ID to reverse: " << Color::RESET;
                 std::cin >> trainId;
+
+                // === FIX: Record the action so we can undo it! ===
+                if (!undoService->isActive())
+                {
+                    undoService->recordAction(ActionType::REVERSE_TRAIN, trainId);
+                }
+                // =================================================
+
                 coachService->reverseTrain(trainId);
                 loggerService->logAction("TRAIN_REVERSE", "Train: " + std::to_string(trainId));
 
@@ -320,6 +330,7 @@ void TerminalUI::handleCoachMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -348,7 +359,7 @@ void TerminalUI::handleNetworkMenu()
             {
                 std::string name;
                 std::cout << Color::CYAN << "Enter Station Name: " << Color::RESET;
-                std::cin.ignore();
+                std::cin.ignore(10000, '\n');
                 std::getline(std::cin, name);
                 int stationId = networkService->createStation(name);
                 if (!undoService->isActive())
@@ -448,6 +459,7 @@ void TerminalUI::handleNetworkMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -534,6 +546,7 @@ void TerminalUI::handleSeatingMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -582,6 +595,7 @@ void TerminalUI::handleSchedulingMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -619,9 +633,11 @@ void TerminalUI::handleLogsMenu()
                 break;
             case 0:
                 back = true;
+
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -678,6 +694,7 @@ void TerminalUI::handlePersistenceMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }
@@ -699,11 +716,11 @@ void TerminalUI::handleUndoRedoMenu()
         {
             case 1:
                 undoService->undo();
-
+                clearScreen();
                 break;
             case 2:
                 undoService->redo();
-
+                clearScreen();
                 break;
             case 0:
                 back = true;
@@ -711,6 +728,7 @@ void TerminalUI::handleUndoRedoMenu()
                 break;
             default:
                 std::cout << Color::RED << "Invalid choice!\n" << Color::RESET;
+                clearScreen();
         }
     }
 }

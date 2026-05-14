@@ -8,13 +8,50 @@
 #include "../TrainService.hpp"
 
 UndoService::UndoService(TrainService* ts, CoachService* cs, NetworkService* ns,
-                         SchedulingService* ss)
+                         SchedulingService* ss, LoggerService* ls)
     : trainService(ts),
       coachService(cs),
       networkService(ns),
       schedulingService(ss),
       isUndoingRedoing(false)
 {
+}
+
+std::string UndoService::getActionName(ActionType type) const
+{
+    switch (type)
+    {
+        case ActionType::REGISTER_TRAIN:
+            return "REGISTER_TRAIN";
+        case ActionType::REMOVE_TRAIN:
+            return "REMOVE_TRAIN";
+        case ActionType::CREATE_COACH:
+            return "CREATE_COACH";
+        case ActionType::DELETE_COACH:
+            return "DELETE_COACH";
+        case ActionType::LINK_COACH:
+            return "LINK_COACH";
+        case ActionType::UNLINK_COACH:
+            return "UNLINK_COACH";
+        case ActionType::REVERSE_TRAIN:
+            return "REVERSE_TRAIN";
+        case ActionType::CREATE_STATION:
+            return "CREATE_STATION";
+        case ActionType::DELETE_STATION:
+            return "DELETE_STATION";
+        case ActionType::LINK_STATIONS:
+            return "LINK_STATIONS";
+        case ActionType::UNLINK_STATIONS:
+            return "UNLINK_STATIONS";
+        case ActionType::BOOK_SEAT:
+            return "BOOK_SEAT";
+        case ActionType::CANCEL_SEAT:
+            return "CANCEL_SEAT";
+        case ActionType::ASSIGN_ROUTE:
+            return "ASSIGN_ROUTE";
+        default:
+            return "UNKNOWN_ACTION";
+    }
 }
 
 UndoService::~UndoService()
@@ -243,6 +280,14 @@ void UndoService::undo()
     UndoAction* action = undoStack.pop();
     executeAction(action, true);
     redoStack.push(action);
+
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAA";
+    // <-- LOG IT!
+    loggerService->logAction("UNDO_ACTION",
+                             "Reversed: " + getActionName(action->type) +
+                                 " (Primary ID: " + std::to_string(action->primaryId) + ")");
+
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBB";
 }
 
 void UndoService::redo()
@@ -255,4 +300,9 @@ void UndoService::redo()
     UndoAction* action = redoStack.pop();
     executeAction(action, false);
     undoStack.push(action);
+
+    // <-- LOG IT!
+    loggerService->logAction("REDO_ACTION",
+                             "Reapplied: " + getActionName(action->type) +
+                                 " (Primary ID: " + std::to_string(action->primaryId) + ")");
 }

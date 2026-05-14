@@ -15,7 +15,8 @@ int main()
     SchedulingService schedulingService(&trainService, &networkService);
 
     LoggerService loggerService;
-    UndoService undoService(&trainService, &coachService, &networkService, &schedulingService);
+    UndoService undoService(&trainService, &coachService, &networkService, &schedulingService,
+                            &loggerService);
 
     TerminalUI ui(&trainService, &coachService, &networkService, &schedulingService, &loggerService,
                   &undoService);

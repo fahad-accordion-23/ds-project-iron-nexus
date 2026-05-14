@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../Services/CoachService.hpp"
+#include "../Services/LoggerService.hpp"  // <-- Logger Included
 #include "../Services/NetworkService.hpp"
 #include "../Services/SchedulingService.hpp"
 #include "../Services/TrainService.hpp"
@@ -14,21 +15,17 @@ enum class ActionType
 {
     REGISTER_TRAIN,
     REMOVE_TRAIN,
-
     CREATE_COACH,
     DELETE_COACH,
     LINK_COACH,
     UNLINK_COACH,
     REVERSE_TRAIN,
-
     CREATE_STATION,
     DELETE_STATION,
     LINK_STATIONS,
     UNLINK_STATIONS,
-
     BOOK_SEAT,
     CANCEL_SEAT,
-
     ASSIGN_ROUTE
 };
 
@@ -60,13 +57,16 @@ private:
     CoachService* coachService;
     NetworkService* networkService;
     SchedulingService* schedulingService;
+    LoggerService* loggerService;  // <-- Logger Variable
 
     bool isUndoingRedoing;
 
     void executeAction(UndoAction* action, bool isUndo);
+    std::string getActionName(ActionType type) const;  // <-- New Helper
 
 public:
-    UndoService(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss);
+    UndoService(TrainService* ts, CoachService* cs, NetworkService* ns, SchedulingService* ss,
+                LoggerService* ls);
     ~UndoService();
 
     void recordAction(ActionType type, int primaryId, int secondaryId = -1,

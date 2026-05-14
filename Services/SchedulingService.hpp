@@ -21,7 +21,7 @@ public:
 
     void assignRoute(Train::TrainID trainId, Station::StationID startId, Station::StationID endId);
 
-    void decommissionRoute(Train::TrainID trainId);
+    void decommissionRoute(Train::TrainID trainId, bool silent = false);
 
     Station::StationID getDestination(Train::TrainID trainId) const;
 

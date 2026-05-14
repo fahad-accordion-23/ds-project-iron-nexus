@@ -76,17 +76,34 @@ void SchedulingService::assignRoute(Train::TrainID trainId, Station::StationID s
     networkService->suggestRoute(startId, endId);
 }
 
-void SchedulingService::decommissionRoute(Train::TrainID trainId)
+void SchedulingService::decommissionRoute(Train::TrainID trainId, bool silent)
 {
     try
     {
         schedule->search(trainId);
         schedule->remove(trainId);
-        std::cout << "[SchedulingService] Train " << trainId << " route cleared.\n";
+
+        if (!silent)
+        {
+            std::cout << Color::GREEN << "[SchedulingService] Train " << trainId
+                      << " route cleared.\n";
+            std::cout << Color::RESET;
+        }
+        else
+        {
+            std::cout << Color::YELLOW << "[SchedulingService] Train " << trainId
+                      << " route cleared (Silent).\n";
+            std::cout << Color::RESET;
+        }
     }
     catch (...)
     {
-        std::cout << "[SchedulingService] Error: No assignment for Train " << trainId << ".\n";
+        if (!silent)
+        {
+            std::cout << Color::RED << "[SchedulingService] Error: No assignment for Train "
+                      << trainId << ".\n";
+            std::cout << Color::RESET;
+        }
     }
 }
 
