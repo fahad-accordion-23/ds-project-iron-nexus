@@ -26,17 +26,10 @@ This project includes a `Makefile` for easy compilation.
 make clean
 ```
 
-## Directory Structure
-
-* **`Documentation/`**: Sequence diagrams mapping out the logic for each module.
-* **`Operations/`**: System logging logic.
-* **`Railway/`**: Network and Station domain models.
-* **`Repositories/`**: Handles reading/writing the system state to data files.
-* **`Services/`**: The core business logic connecting domain models to data structures.
-* **`Structures/`**: Implementation of all custom data structures (AVL, BST, Graph, Hash Table, Stack, LinkedList).
-* **`Train/`**: Train, Coach, and Seat domain models.
-* **`UI/`**: ANSI-colored terminal user interface.
-
 ## Usage
 
 Once running, the application presents a numbered terminal UI. Simply type the number corresponding to the module you want to interact with and press `Enter`.
+
+## Credits
+
+Danish, Musa, and Fahad (Roll Numbers: 24i-0739, 24i-0538, and 23i-0835) worked on this repository, collaborating physically. All the work was pushed from one computer only.
